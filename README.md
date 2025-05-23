@@ -10,15 +10,56 @@ npm install rn-step-form
 
 ## Usage
 
-
 ```js
-import { multiply } from 'rn-step-form';
+import { StepFormBuilder } from 'rn-step-form';
 
 // ...
 
-const result = await multiply(3, 7);
+<StepFormBuilder
+  onSubmit={console.log}
+  steps={[
+    {
+      title: 'Step 1',
+      fields: [
+        {
+          name: 'field1',
+          label: 'Field label',
+          type: 'text',
+          validation: {
+            required: { message: 'This field is required', value: true },
+          },
+        },
+        {
+          name: 'field2',
+          label: 'field label',
+          type: 'number',
+        },
+      ],
+      onStepComplete(data) {
+        console.log('data', data);
+        return Promise.resolve(data);
+      },
+    },
+    {
+      title: 'Step 2',
+      fields: [
+        {
+          name: 'field1',
+          label: 'Field label',
+          type: 'text',
+          validation: {
+            required: { message: 'This field is required', value: true },
+          },
+        },
+      ],
+    },
+  ]}
+  defaultValues={{}}
+  externalValues={{}}
+  onError={console.error}
+  onExternalValueChange={console.warn}
+/>;
 ```
-
 
 ## Contributing
 

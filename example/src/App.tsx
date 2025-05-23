@@ -46,9 +46,9 @@ export default function App() {
                 },
               },
               {
-                name: 'position',
-                label: 'Fonction',
-                type: 'text',
+                name: 'is_worker',
+                label: 'Travailels tu?',
+                type: 'checkbox',
               },
             ],
             onStepComplete(data) {

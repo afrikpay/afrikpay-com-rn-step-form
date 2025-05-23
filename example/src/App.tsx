@@ -1,12 +1,67 @@
-import { multiply } from 'rn-step-form';
-import { Text, View, StyleSheet } from 'react-native';
-
-const result = multiply(3, 7);
+import { StepFormBuilder } from 'rn-step-form';
+import { View, StyleSheet } from 'react-native';
+import { Text } from 'react-native-paper';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Text variant="titleLarge">I am testing this form builder</Text>
+      <StepFormBuilder
+        onSubmit={console.log}
+        steps={[
+          {
+            title: 'Information Personnelles',
+            fields: [
+              {
+                name: 'name',
+                label: 'Nom',
+                type: 'text',
+                validation: {
+                  required: { message: 'This field is required', value: true },
+                },
+              },
+              {
+                name: 'age',
+                label: 'Age',
+                type: 'number',
+                validation: {
+                  min: { message: 'You must be older than 5 years', value: 5 },
+                },
+              },
+            ],
+            onStepComplete(data) {
+              console.log('data', data);
+              return Promise.resolve(data);
+            },
+          },
+          {
+            title: 'Information Legales',
+            fields: [
+              {
+                name: 'married',
+                label: 'Vous etes marie?',
+                type: 'text',
+                validation: {
+                  required: { message: 'This field is required', value: true },
+                },
+              },
+              {
+                name: 'position',
+                label: 'Fonction',
+                type: 'text',
+              },
+            ],
+            onStepComplete(data) {
+              console.log('data', data);
+              return Promise.resolve(data);
+            },
+          },
+        ]}
+        defaultValues={{}}
+        externalValues={{}}
+        onError={console.error}
+        onExternalValueChange={console.warn}
+      />
     </View>
   );
 }
@@ -14,7 +69,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

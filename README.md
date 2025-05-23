@@ -8,6 +8,10 @@ A react native step form
 npm install rn-step-form
 ```
 
+```sh
+yarn add rn-step-form
+```
+
 ## Usage
 
 ```js

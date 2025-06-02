@@ -1,6 +1,6 @@
 {
   "name": "rn-step-form",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A react native step form",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",

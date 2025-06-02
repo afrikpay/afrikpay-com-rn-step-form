@@ -62,9 +62,11 @@ export default function StepFormBuilder({
             setValue(key, value);
           });
         }
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Step completion error:', error);
-        onError?.({ stepError: error?.message });
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        onError?.({ stepError: errorMessage });
         return;
       } finally {
         setIsProcessing(false);

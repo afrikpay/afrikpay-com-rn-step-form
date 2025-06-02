@@ -154,5 +154,6 @@
     "languages": "js",
     "type": "library",
     "version": "0.49.2"
-  }
+  },
+  "private": true
 }

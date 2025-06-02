@@ -16,17 +16,11 @@ export default function App() {
                 name: 'name',
                 label: 'Nom',
                 type: 'text',
-                validation: {
-                  required: { message: 'This field is required', value: true },
-                },
               },
               {
                 name: 'age',
                 label: 'Age',
                 type: 'number',
-                validation: {
-                  min: { message: 'You must be older than 5 years', value: 5 },
-                },
               },
             ],
             onStepComplete(data) {
@@ -39,7 +33,7 @@ export default function App() {
             fields: [
               {
                 name: 'married',
-                label: 'Vous etes marie?',
+                label: 'Le nom de votre mari',
                 type: 'text',
                 validation: {
                   required: { message: 'This field is required', value: true },
@@ -57,7 +51,7 @@ export default function App() {
             },
           },
         ]}
-        defaultValues={{}}
+        defaultValues={{ name: 'urlrichhhhh', is_worker: true }}
         externalValues={{}}
         onError={console.error}
         onExternalValueChange={console.warn}

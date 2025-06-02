@@ -1,22 +1,15 @@
 import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Checkbox, HelperText, Text, TextInput } from 'react-native-paper';
-import {
-  Controller,
-  type Control,
-  type FieldError,
-  type FieldErrorsImpl,
-  type Merge,
-} from 'react-hook-form';
-import type { FormField } from '../types';
+import { Controller } from 'react-hook-form';
+import type { StepFormFieldProps } from '../types';
 
-type StepFormFieldProps = {
-  field: FormField;
-  control: Control<any>;
-  error?: FieldError | Merge<FieldError, FieldErrorsImpl<FormData>>;
-};
-
-export function StepFormField({ field, control, error }: StepFormFieldProps) {
+export function StepFormField({
+  field,
+  control,
+  error,
+  defaultValue,
+}: StepFormFieldProps) {
   const [secureTextVisible, setSecureTextVisible] = useState(false);
 
   const {
@@ -56,18 +49,16 @@ export function StepFormField({ field, control, error }: StepFormFieldProps) {
         control={control}
         name={name}
         rules={validation}
+        defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value } }) => (
           <>
             {type === 'checkbox' ? (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 16,
-                }}
-              >
+              <View style={styles.checkboxContainer}>
                 <Text variant="bodyMedium">{label}</Text>
-                <Checkbox onPress={onChange} status={value ? 'checked' : 'unchecked'} />
+                <Checkbox
+                  onPress={() => onChange(!value)}
+                  status={value ? 'checked' : 'unchecked'}
+                />
               </View>
             ) : (
               <TextInput
@@ -103,7 +94,7 @@ export function StepFormField({ field, control, error }: StepFormFieldProps) {
             )}
             {error && (
               <HelperText type="error" visible={!!error}>
-                {error.message}
+                {error.message?.toString()}
               </HelperText>
             )}
           </>
@@ -116,6 +107,11 @@ export function StepFormField({ field, control, error }: StepFormFieldProps) {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 16,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
   },
   input: {
     backgroundColor: 'transparent',

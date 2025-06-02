@@ -1,4 +1,10 @@
-import type { RegisterOptions } from 'react-hook-form';
+import type {
+  Control,
+  FieldError,
+  FieldErrorsImpl,
+  Merge,
+  RegisterOptions,
+} from 'react-hook-form';
 import type { TextInputProps } from 'react-native-paper';
 
 export type ValidationRule =
@@ -58,4 +64,11 @@ export type StepFormBuilderProps = {
   defaultValues?: FormData;
   externalValues?: FormData;
   onExternalValueChange?: (name: string, value: any) => void;
+};
+
+export type StepFormFieldProps = {
+  field: FormField;
+  control: Control<any>;
+  error?: FieldError | Merge<FieldError, FieldErrorsImpl<FormData>>;
+  defaultValue?: any;
 };

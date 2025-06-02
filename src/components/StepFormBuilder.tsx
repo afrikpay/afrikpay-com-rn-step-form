@@ -87,15 +87,15 @@ export default function StepFormBuilder({
     }
   };
 
-  const handleFormError = (errors: Record<string, any>) => {
-    onError?.(errors);
+  const handleFormError = (error: Record<string, any>) => {
+    onError?.(error);
   };
 
   return (
     <View style={styles.container}>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="always"
       >
@@ -116,6 +116,7 @@ export default function StepFormBuilder({
               field={field}
               control={control}
               error={errors[field.name]}
+              defaultValue={defaultValues?.[field.name]}
             />
           ))}
         </Animated.View>
@@ -161,6 +162,7 @@ const styles = StyleSheet.create({
     padding: 24,
     gap: 16,
   },
+  contentContainer: { flexGrow: 1 },
   scrollView: {
     flex: 1,
   },

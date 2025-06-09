@@ -4,10 +4,12 @@
   "description": "A react native step form",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",
+  "react-native": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {
     ".": {
       "types": "./lib/typescript/src/index.d.ts",
+      "react-native": "./lib/module/index.js",
       "default": "./lib/module/index.js"
     },
     "./package.json": "./package.json"
@@ -37,6 +39,7 @@
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "clean": "del-cli lib",
+    "build": "tsc",
     "prepare": "bob build",
     "release": "release-it"
   },

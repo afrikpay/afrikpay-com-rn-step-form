@@ -2208,7 +2208,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/vector-icons@npm:^14.0.0":
+"@expo/vector-icons@npm:^14.0.0, @expo/vector-icons@npm:^14.1.0":
   version: 14.1.0
   resolution: "@expo/vector-icons@npm:14.1.0"
   peerDependencies:
@@ -11758,6 +11758,7 @@ __metadata:
   dependencies:
     "@babel/core": ^7.20.0
     "@expo/metro-runtime": ~5.0.4
+    "@expo/vector-icons": ^14.1.0
     expo: ~53.0.9
     expo-status-bar: ~2.2.3
     react: 19.0.0
@@ -11781,6 +11782,7 @@ __metadata:
     "@eslint/eslintrc": ^3.3.0
     "@eslint/js": ^9.22.0
     "@evilmartians/lefthook": ^1.5.0
+    "@expo/vector-icons": ^14.1.0
     "@react-native/eslint-config": ^0.78.0
     "@release-it/conventional-changelog": ^9.0.2
     "@types/jest": ^29.5.5
@@ -11801,6 +11803,7 @@ __metadata:
     release-it: ^17.10.0
     typescript: ^5.2.2
   peerDependencies:
+    "@expo/vector-icons": "*"
     react: "*"
     react-hook-form: "*"
     react-native: "*"

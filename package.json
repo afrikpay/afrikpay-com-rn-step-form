@@ -1,6 +1,6 @@
 {
   "name": "rn-step-form",
-  "version": "0.1.8",
+  "version": "0.1.7",
   "description": "A react native step form",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",
@@ -67,6 +67,7 @@
     "@eslint/eslintrc": "^3.3.0",
     "@eslint/js": "^9.22.0",
     "@evilmartians/lefthook": "^1.5.0",
+    "@expo/vector-icons": "^14.1.0",
     "@react-native/eslint-config": "^0.78.0",
     "@release-it/conventional-changelog": "^9.0.2",
     "@types/jest": "^29.5.5",
@@ -88,6 +89,7 @@
     "typescript": "^5.2.2"
   },
   "peerDependencies": {
+    "@expo/vector-icons": "*",
     "react": "*",
     "react-hook-form": "*",
     "react-native": "*",
@@ -116,7 +118,7 @@
       "tagName": "v${version}"
     },
     "npm": {
-      "publish": true
+      "publish": false
     },
     "github": {
       "release": true

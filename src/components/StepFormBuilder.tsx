@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Button } from 'react-native-paper';
+import { Button, PaperProvider } from 'react-native-paper';
 import { useForm } from 'react-hook-form';
 import { StepFormField } from './StepFormField';
 import Animated, {
@@ -94,66 +94,87 @@ export default function StepFormBuilder({
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="always"
-      >
-        <StepFormHeader
-          steps={steps}
-          currentStep={currentStep}
-          data={getValues()}
-        />
-        <Animated.View
-          entering={SlideInRight}
-          exiting={SlideOutLeft}
-          key={currentStep}
-          style={styles.fieldsContainer}
+    <PaperProvider>
+      <View style={styles.container}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="always"
         >
-          {steps[currentStep]?.fields.map((field) => (
-            <StepFormField
-              key={field.name}
-              field={field}
-              control={control}
-              error={errors[field.name]}
-              defaultValue={defaultValues?.[field.name]}
-            />
-          ))}
-        </Animated.View>
-        <Animated.View
-          style={styles.buttonsContainer}
-          entering={FadeIn}
-          exiting={FadeOut}
-        >
-          {currentStep > 0 && (
+          <StepFormHeader
+            steps={steps}
+            currentStep={currentStep}
+            data={getValues()}
+          />
+          <Animated.View
+            entering={SlideInRight}
+            exiting={SlideOutLeft}
+            key={currentStep}
+            style={styles.fieldsContainer}
+          >
+            {steps[currentStep]?.fields.map((field) => (
+              <StepFormField
+                key={field.name}
+                field={field}
+                control={control}
+                error={errors[field.name]}
+                defaultValue={defaultValues?.[field.name]}
+              />
+            ))}
+          </Animated.View>
+          <Animated.View
+            style={styles.buttonsContainer}
+            entering={FadeIn}
+            exiting={FadeOut}
+          >
+            {currentStep > 0 && (
+              <Button
+                mode="outlined"
+                onPress={handleBack}
+                style={styles.button}
+                theme={{ roundness: 5 }}
+              >
+                Back
+              </Button>
+            )}
             <Button
-              mode="outlined"
-              onPress={handleBack}
+              mode="contained"
+              onPress={
+                isLastStep
+                  ? handleSubmit(handleFormSubmit, handleFormError)
+                  : handleNext
+              }
+              loading={isProcessing}
               style={styles.button}
               theme={{ roundness: 5 }}
+              disabled={isProcessing || (isLastStep && !formIsValid)}
             >
-              Back
+              {isLastStep ? 'Valider' : 'Suivant'}
             </Button>
-          )}
-          <Button
-            mode="contained"
-            onPress={
-              isLastStep
-                ? handleSubmit(handleFormSubmit, handleFormError)
-                : handleNext
-            }
-            loading={isProcessing}
-            style={styles.button}
-            theme={{ roundness: 5 }}
-            disabled={isProcessing || (isLastStep && !formIsValid)}
-          >
-            {isLastStep ? 'Valider' : 'Suivant'}
-          </Button>
-        </Animated.View>
-      </ScrollView>
-    </View>
+          </Animated.View>
+        </ScrollView>
+      </View>
+      {/* <Portal>
+        <Modal
+          onDismiss={console.log}
+          contentContainerStyle={{
+            flex: 1,
+            padding: 20,
+          }}
+          dismissable={false}
+          visible
+        >
+          <ScrollView contentContainerStyle={{ flex: 1 }}>
+            {options?.map(renderOption)}
+          </ScrollView>
+          <View>
+            <Button mode="outlined">Cancel</Button>
+            <Button mode="contained-tonal">Done</Button>
+          </View>
+        </Modal>
+      </Portal> */}
+    </PaperProvider>
   );
 }
 

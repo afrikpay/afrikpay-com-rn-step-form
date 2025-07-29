@@ -60,7 +60,7 @@ export function StepFormField({
                   status={value ? 'checked' : 'unchecked'}
                 />
               </View>
-            ) : (
+            ) : type === 'select' ? null : (
               <TextInput
                 label={label}
                 onBlur={onBlur}
@@ -112,6 +112,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
+  },
+  selectContainer: {
+    flex: 1,
+    gap: 16,
+    backgroundColor: 'red',
   },
   input: {
     backgroundColor: 'transparent',

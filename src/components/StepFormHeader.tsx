@@ -1,4 +1,4 @@
-import type { FormStep } from '../types';
+import type { FormStep } from './types/types';
 
 type StepFormHeaderProps = {
   steps: FormStep[];
@@ -11,5 +11,5 @@ export function StepFormHeader({
   currentStep,
   data,
 }: StepFormHeaderProps) {
-  return steps[currentStep]?.header?.(data);
+  return <>{steps[currentStep]?.header?.(data)}</>;
 }

@@ -1,4 +1,4 @@
-import type { FormStep } from './types/types';
+import type { FormStep } from '../types';
 
 type StepFormHeaderProps = {
   steps: FormStep[];

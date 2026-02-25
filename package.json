@@ -1,5 +1,5 @@
 {
-  "name": "rn-step-form",
+  "name": "@afrikpay/rn-step-form",
   "version": "0.1.9",
   "description": "A react native step form",
   "source": "./src/index.tsx",

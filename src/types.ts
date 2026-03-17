@@ -35,7 +35,7 @@ export type FormField = {
   leftIcon?: () => React.ReactNode;
   rightIcon?: () => React.ReactNode;
   options?: Array<{ label: string; value: string }>;
-  inputProps?: Partial<TextInputProps>;
+  inputProps?: Omit<TextInputProps, 'ref'>;
 };
 
 export type FormStep = {

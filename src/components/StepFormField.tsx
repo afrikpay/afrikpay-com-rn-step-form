@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Checkbox, HelperText, Text, TextInput } from 'react-native-paper';
 import { Controller } from 'react-hook-form';

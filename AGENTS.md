@@ -4,7 +4,7 @@
 
 ## Stack
 - **Langage** : Node.js / npm
-- **Package** : `rn-step-form`
+- **Package** : `@afrikpay/rn-step-form`
 - **Version** : 0.1.9
 
 ## Structure source

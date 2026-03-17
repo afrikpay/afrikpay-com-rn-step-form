@@ -5,17 +5,17 @@ A react native step form
 ## Installation
 
 ```sh
-npm install rn-step-form
+npm install @afrikpay/rn-step-form
 ```
 
 ```sh
-yarn add rn-step-form
+yarn add @afrikpay/rn-step-form
 ```
 
 ## Usage
 
 ```js
-import { StepFormBuilder } from 'rn-step-form';
+import { StepFormBuilder } from '@afrikpay/rn-step-form';
 
 // ...
 

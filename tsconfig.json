@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "rn-step-form": ["./src/index"]
+      "@afrikpay/rn-step-form": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

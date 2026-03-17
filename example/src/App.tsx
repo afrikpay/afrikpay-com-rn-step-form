@@ -1,4 +1,4 @@
-import { StepFormBuilder } from 'rn-step-form';
+import { StepFormBuilder } from '@afrikpay/rn-step-form';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';

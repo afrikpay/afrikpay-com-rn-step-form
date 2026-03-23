@@ -1,7 +1,9 @@
-import { StepFormBuilder } from 'rn-step-form';
+import { StepFormBuilder } from '../../src/index';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+//const DEFAULT_VALUES = { name: 'urlrichhhhh', is_worker: true };
 
 export default function App() {
   return (
@@ -26,6 +28,7 @@ export default function App() {
                 },
               ],
               onStepComplete(data) {
+                // fonction appler lorsque le user clique sur Next
                 console.log('data', data);
                 return Promise.resolve(data);
               },
@@ -72,8 +75,8 @@ export default function App() {
               },
             },
           ]}
-          defaultValues={{ name: 'urlrichhhhh', is_worker: true }}
-          externalValues={{}}
+          defaultValues={{ name: 'cedigno', is_worker: true }}
+          externalValues={{}} // undefined
           onError={console.error}
           onExternalValueChange={console.warn}
         />

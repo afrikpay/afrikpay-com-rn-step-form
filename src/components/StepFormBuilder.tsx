@@ -1,32 +1,34 @@
 import { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Button, PaperProvider } from 'react-native-paper';
+import { Button, PaperProvider } from 'react-native-paper'; // fournit le theme global
 import { useForm } from 'react-hook-form';
 import { StepFormField } from './StepFormField';
+import { StepFormHeader } from './StepFormHeader';
+/*
 import Animated, {
   FadeIn,
   FadeOut,
   SlideInRight,
   SlideOutLeft,
 } from 'react-native-reanimated';
-import { StepFormHeader } from './StepFormHeader';
+*/
 import type { FormData, StepFormBuilderProps } from '../types';
 
 export default function StepFormBuilder({
-  steps,
-  onSubmit,
+  steps, // etape du formulaire
+  onSubmit, // fonction final
   onError,
   defaultValues,
-  externalValues,
+  externalValues, // valeur externe
 }: StepFormBuilderProps) {
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const isLastStep = currentStep === steps.length - 1;
+  const [isProcessing, setIsProcessing] = useState(false); // indique si une action est en cours
+  const [currentStep, setCurrentStep] = useState(0); // etape actuel(premiere etape = 0)
+  const isLastStep = currentStep === steps.length - 1; // verifie si on es a la derniere etape
 
   const {
-    control,
+    control, // connecte les champs au formulaire
     handleSubmit,
-    trigger,
+    trigger, // valide les champs manuellement
     formState: { errors, isValid: formIsValid },
     getValues,
     setValue,
@@ -43,18 +45,19 @@ export default function StepFormBuilder({
   }, [externalValues, setValue]);
 
   const handleNext = async () => {
-    const fields = steps[currentStep]?.fields.map((field) => field.name);
-    const isValid = await trigger(fields);
+    const fields = steps[currentStep]?.fields.map((field) => field.name); // recupere les nom des champs a l'etat actuel
+    const isValid = await trigger(fields); // valide les champs
 
     if (!isValid) return;
 
     const currentStepData = getValues();
 
     if (steps[currentStep]?.onStepComplete) {
+      // si une fonction existe a l'etat actuelle on charge les data
       setIsProcessing(true);
       try {
         const result =
-          await steps[currentStep]?.onStepComplete(currentStepData);
+          await steps[currentStep]?.onStepComplete(currentStepData); // passe a l'etape suivant
 
         // If the handler returns data, merge it with the form data
         if (result) {
@@ -73,11 +76,11 @@ export default function StepFormBuilder({
       }
     }
 
-    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1)); // passe a l'etape suivant
   };
 
   const handleBack = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    setCurrentStep((prev) => Math.max(prev - 1, 0)); // retour a l'etape precedente
   };
 
   const handleFormSubmit = async (data: FormData) => {
@@ -107,12 +110,7 @@ export default function StepFormBuilder({
             currentStep={currentStep}
             data={getValues()}
           />
-          <Animated.View
-            entering={SlideInRight}
-            exiting={SlideOutLeft}
-            key={currentStep}
-            style={styles.fieldsContainer}
-          >
+          <View key={currentStep} style={styles.fieldsContainer}>
             {steps[currentStep]?.fields.map((field) => (
               <StepFormField
                 key={field.name}
@@ -122,12 +120,8 @@ export default function StepFormBuilder({
                 defaultValue={defaultValues?.[field.name]}
               />
             ))}
-          </Animated.View>
-          <Animated.View
-            style={styles.buttonsContainer}
-            entering={FadeIn}
-            exiting={FadeOut}
-          >
+          </View>
+          <View style={styles.buttonsContainer}>
             {currentStep > 0 && (
               <Button
                 mode="outlined"
@@ -141,7 +135,7 @@ export default function StepFormBuilder({
             <Button
               mode="contained"
               onPress={
-                isLastStep
+                isLastStep // si dernier etape submit si non on passe a l'etape suivant
                   ? handleSubmit(handleFormSubmit, handleFormError)
                   : handleNext
               }
@@ -152,7 +146,7 @@ export default function StepFormBuilder({
             >
               {isLastStep ? 'Valider' : 'Suivant'}
             </Button>
-          </Animated.View>
+          </View>
         </ScrollView>
       </View>
       {/* <Portal>

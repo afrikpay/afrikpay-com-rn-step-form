@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Checkbox, HelperText, Text, TextInput } from 'react-native-paper';
-import { Controller } from 'react-hook-form';
+import { Controller } from 'react-hook-form'; // pour connect les input aux formulaire
 import type { StepFormFieldProps } from '../types';
 
 export function StepFormField({
@@ -25,6 +25,7 @@ export function StepFormField({
   } = field;
 
   const getKeyboardType = () => {
+    // fonction pour adapter le clavier du telephones
     switch (type) {
       case 'email':
         return 'email-address';

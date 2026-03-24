@@ -24,6 +24,8 @@ export type FieldType =
   | 'checkbox'
   | 'date';
 
+export type ContentAlign = 'top' | 'center' | 'bottom'; // alignement du contenu dans la step
+
 export type FormField = {
   name: string;
   label: string;
@@ -36,14 +38,38 @@ export type FormField = {
   rightIcon?: () => React.ReactNode;
   options?: Array<{ label: string; value: string }>;
   inputProps?: Partial<TextInputProps>;
+  showWhen?: {
+    // condition pour afficher le champ nom de votre marie
+    field: string;
+    value: any;
+  };
 };
+
+export type StepType = 'form' | 'custom'; // type de step, custom = step personnalisée
+
+export type ButtonPosition = // position des boutons
+  'center' | 'bottom' | 'bottom-raised' | 'top' | 'custom';
 
 export type FormStep = {
   title?: string;
   description?: string;
   fields: FormField[];
+  type?: StepType;
+  render?: (
+    data: FormData,
+    goToNextStep: () => void,
+    goToPreviousStep: () => void
+  ) => React.ReactNode;
   header?: (data?: Record<string, any>) => React.ReactNode;
   onStepComplete?: (data: FormData) => Promise<FormData | void>;
+  /**
+   * Position des boutons Back / Suivant / Valider pour cette étape.
+   * Par défaut : `'center'` (dans le flux du ScrollView).
+   */
+  buttonPosition?: ButtonPosition;
+  contentAlign?: ContentAlign; // ← nouveau
+  //isNextDisabled?: boolean;
+  isNextDisabled?: boolean | ((values: FormData) => boolean); // soit un boolean soit une fonction qui retourne un boolean
 };
 
 export type FormButton = {

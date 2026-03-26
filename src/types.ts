@@ -38,6 +38,7 @@ export type FormField = {
   rightIcon?: () => React.ReactNode;
   options?: Array<{ label: string; value: string }>;
   inputProps?: Partial<TextInputProps>;
+  editable?: (formValues: Record<string, any>) => boolean;
   showWhen?: {
     // condition pour afficher le champ nom de votre marie
     field: string;
@@ -53,7 +54,7 @@ export type ButtonPosition = // position des boutons
 export type FormStep = {
   title?: string;
   description?: string;
-  fields: FormField[];
+  fields?: FormField[];
   type?: StepType;
   render?: (
     data: FormData,
@@ -96,5 +97,6 @@ export type StepFormFieldProps = {
   field: FormField;
   control: Control<any>;
   error?: FieldError | Merge<FieldError, FieldErrorsImpl<FormData>>;
+  //formValues?: Record<string, any>;
   defaultValue?: any;
 };

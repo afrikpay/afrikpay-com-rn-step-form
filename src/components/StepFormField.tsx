@@ -1,206 +1,3 @@
-/*import { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Checkbox, HelperText, Menu, Text, TextInput } from 'react-native-paper';
-import { Controller } from 'react-hook-form'; // pour connect les input aux formulaire
-import type { StepFormFieldProps } from '../types';
-
-// ── Composant Select ─────────────────────────────────────────────────────────
-function SelectField({
-  label,
-  value,
-  options = [],
-  onChange,
-  error,
-  disabled,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  options: Array<{ label: string; value: string }>;
-  onChange: (val: string) => void;
-  error?: boolean;
-  disabled?: boolean;
-  placeholder?: string;
-}) {
-  const [visible, setVisible] = useState(false);
-  const selected = options.find((o) => o.value === value);
-
-  return (
-    <Menu
-      visible={visible}
-      onDismiss={() => setVisible(false)}
-      anchor={
-        <TouchableOpacity onPress={() => !disabled && setVisible(true)}>
-          <TextInput
-            label={label}
-            value={selected?.label ?? ''}
-            mode="outlined"
-            editable={false}
-            error={error}
-            disabled={disabled}
-            placeholder={placeholder}
-            right={
-              <TextInput.Icon
-                icon="chevron-down"
-                onPress={() => !disabled && setVisible(true)}
-              />
-            }
-            style={styles.input}
-            theme={{ roundness: 8 }}
-            pointerEvents="none" // empêche le clavier de s'ouvrir
-          />
-        </TouchableOpacity>
-      }
-    >
-      {options.map((option) => (
-        <Menu.Item
-          key={option.value}
-          title={option.label}
-          onPress={() => {
-            onChange(option.value);
-            setVisible(false);
-          }}
-        />
-      ))}
-    </Menu>
-  );
-}
-// fin du composant Select
-
-export function StepFormField({
-  field,
-  control,
-  error,
-  defaultValue,
-  
-}: StepFormFieldProps) {
-  const [secureTextVisible, setSecureTextVisible] = useState(false);
-
-  const {
-    name,
-    label,
-    type,
-    placeholder,
-    validation,
-    disabled,
-    options,
-    leftIcon: LeftIcon,
-    rightIcon: RightIcon,
-    inputProps,
-  } = field;
-
-  const getKeyboardType = () => {
-    // fonction pour adapter le clavier du telephones
-    switch (type) {
-      case 'email':
-        return 'email-address';
-      case 'phone':
-        return 'phone-pad';
-      case 'number':
-        return 'numeric';
-      default:
-        return 'default';
-    }
-  };
-
-  const isSecureField = type === 'password';
-
-  const toggleSecureEntry = () => {
-    setSecureTextVisible((prev) => !prev);
-  };
-
-  return (
-    <View style={styles.container}>
-      <Controller
-        control={control}
-        name={name}
-        rules={validation}
-        defaultValue={defaultValue}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <>
-            {type === 'checkbox' ? (
-              <View style={styles.checkboxContainer}>
-                <Text variant="bodyMedium">{label}</Text>
-                <Checkbox
-                  onPress={() => onChange(!value)}
-                  status={value ? 'checked' : 'unchecked'}
-                />
-              </View>
-            ) : type === 'select' ? (
-              /* ── CAS 2 : select ──────────────────────────────────────── 
-              <SelectField
-                label={label}
-                value={value}
-                options={options ?? []}
-                onChange={onChange}
-                error={!!error}
-                placeholder={placeholder}
-                disabled={disabled}
-                
-              />
-            ) : (
-              <TextInput
-                label={label}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                error={!!error}
-                disabled={disabled}
-                mode="outlined"
-                placeholder={placeholder}
-                keyboardType={getKeyboardType()}
-                secureTextEntry={isSecureField && !secureTextVisible}
-                autoCapitalize={type === 'email' ? 'none' : 'sentences'}
-                autoComplete={type === 'email' ? 'email' : 'off'}
-                autoCorrect={false}
-                left={LeftIcon?.()}
-                right={
-                  isSecureField ? (
-                    <TextInput.Icon
-                      icon={() => inputProps?.right}
-                      onPress={toggleSecureEntry}
-                      forceTextInputFocus={false}
-                    />
-                  ) : (
-                    RightIcon?.()
-                  )
-                }
-                style={styles.input}
-                theme={{ roundness: 8 }}
-                {...inputProps}
-              />
-            )}
-            {error && (
-              <HelperText type="error" visible={!!error}>
-                {error.message?.toString()}
-              </HelperText>
-            )}
-          </>
-        )}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  selectContainer: {
-    flex: 1,
-    gap: 16,
-    backgroundColor: 'red',
-  },
-  input: {
-    backgroundColor: 'transparent',
-  },
-});*/
-
 import { useState, useRef } from 'react';
 import {
   View,
@@ -214,6 +11,7 @@ import {
 import { Checkbox, HelperText, Text, TextInput } from 'react-native-paper';
 import { Controller } from 'react-hook-form';
 import type { StepFormFieldProps } from '../types';
+import { MaterialIcons } from '@expo/vector-icons';
 
 // ── SelectField (bottom sheet natif, sans Menu, pour gerer le select avec react-hook-form) ───────────────────────────────
 function SelectField({
@@ -294,7 +92,13 @@ function SelectField({
             <Text
               style={[sheetStyles.chevron, error && sheetStyles.chevronError]}
             >
-              ▼
+              <MaterialIcons
+                name="keyboard-arrow-down"
+                size={20}
+                style={{
+                  transform: [{ rotate: visible ? '180deg' : '0deg' }],
+                }}
+              />
             </Text>
           </View>
         </View>
@@ -347,7 +151,9 @@ function SelectField({
                   >
                     {item.label}
                   </Text>
-                  {isSelected && <Text style={sheetStyles.checkmark}>✓</Text>}
+                  {isSelected && (
+                    <MaterialIcons name="check" size={18} color="#0070ba" />
+                  )}
                 </TouchableOpacity>
               );
             }}
@@ -364,6 +170,7 @@ export function StepFormField({
   control,
   error,
   defaultValue,
+  //formValues,
 }: StepFormFieldProps) {
   const [secureTextVisible, setSecureTextVisible] = useState(false);
 
@@ -430,6 +237,11 @@ export function StepFormField({
                 value={value}
                 error={!!error}
                 disabled={disabled}
+                /* editable={
+  typeof field.editable === 'function'
+    ? field.editable(formValues ?? {})
+    : true
+}*/
                 mode="outlined"
                 placeholder={placeholder}
                 keyboardType={getKeyboardType()}
@@ -541,5 +353,4 @@ const sheetStyles = StyleSheet.create({
   optionSelected: { backgroundColor: '#F3F0FF' },
   optionText: { fontSize: 16, color: '#212121' },
   optionTextSelected: { color: '#6200ee', fontWeight: '500' },
-  checkmark: { color: '#6200ee', fontSize: 16, fontWeight: 'bold' },
 });

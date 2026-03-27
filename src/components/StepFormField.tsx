@@ -125,7 +125,10 @@ function RadioField({
               color="#6200ee"
             />
             <Text
-              style={[radioStyles.optionLabel, disabled && { opacity: 0.5 }]}
+              style={[
+                radioStyles.optionLabel,
+                disabled && radioStyles.disabled,
+              ]}
             >
               {option.label}
             </Text>
@@ -538,6 +541,9 @@ const radioStyles = StyleSheet.create({
     paddingVertical: 4,
   },
   optionLabel: { fontSize: 16, color: '#212121', marginLeft: 8 },
+  disabled: {
+    opacity: 0.5,
+  },
 });
 
 // AJOUTÉ : Styles pour le composant FileField

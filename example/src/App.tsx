@@ -127,8 +127,6 @@ export default function App() {
             <StepFormBuilder
               onSubmit={console.log}
               steps={[
-                // ─────────────────────────
-                // ETAPE 1
                 {
                   title: 'Information Personnelles',
                   fields: [
@@ -146,9 +144,6 @@ export default function App() {
                   },
                 },
 
-                // etape Multilige
-
-                // ÉTAPE 1 : IDENTITÉ
                 {
                   title: 'Informations Personnelles',
                   fields: [
@@ -163,7 +158,7 @@ export default function App() {
                       label: 'Ma biographie',
                       type: 'multiline',
                       placeholder: 'Parlez-nous de vous...',
-                      validation: { maxLength: 200 },
+                      validation: { maxLength: 200 }, // pour limiter le nombre de caractere
                     },
                   ],
                   isNextDisabled: (values) => !values.name,

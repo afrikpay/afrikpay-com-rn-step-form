@@ -35,7 +35,7 @@ export type FormField = {
   label: string;
   type: FieldType;
   placeholder?: string;
-  defaultValue?: string | number | boolean | Date | any;
+  defaultValue?: string | number | boolean | Date;
   maxLength?: number;
   validation?: ValidationRule;
   disabled?: boolean;

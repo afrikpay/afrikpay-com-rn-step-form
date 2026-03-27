@@ -22,7 +22,11 @@ export type FieldType =
   | 'phone'
   | 'select'
   | 'checkbox'
-  | 'date';
+  | 'date'
+  | 'switch'
+  | 'multiline'
+  | 'radio'
+  | 'file';
 
 export type ContentAlign = 'top' | 'center' | 'bottom'; // alignement du contenu dans la step
 
@@ -32,6 +36,7 @@ export type FormField = {
   type: FieldType;
   placeholder?: string;
   defaultValue?: string;
+  maxLength?: number;
   validation?: ValidationRule;
   disabled?: boolean;
   leftIcon?: () => React.ReactNode;

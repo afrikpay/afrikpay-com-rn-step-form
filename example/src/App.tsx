@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { Text, PaperProvider } from 'react-native-paper';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+//import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import PaymentSelector from '../../src/components/PaymentSelector';
 
@@ -31,6 +31,11 @@ const data = {
     { label: 'NO', value: 'Non' },
     { label: 'MAYBES', value: 'on dirait' },
     { label: 'Divorced', value: 'divorced' },
+  ],
+  gender_options: [
+    { label: 'Masculin', value: 'M' },
+    { label: 'Féminin', value: 'F' },
+    { label: 'Autre', value: 'A' },
   ],
   countries: [
     { label: 'Cameroun', value: 'CM' },
@@ -107,326 +112,381 @@ export default function App() {
   };
 
   return (
-    <SafeAreaProvider>
-      <PaperProvider>
-        <KeyboardAvoidingView
-          style={styles.containerKeyboard}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    <PaperProvider>
+      <KeyboardAvoidingView
+        style={styles.containerKeyboard}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollViewContent}
+          keyboardShouldPersistTaps="handled"
         >
-          <ScrollView
-            contentContainerStyle={styles.scrollViewContent}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View style={styles.container}>
-              <Text variant="titleLarge">Step Form Paiement</Text>
+          <View style={styles.container}>
+            <Text variant="titleLarge">Step Form Paiement</Text>
 
-              <StepFormBuilder
-                onSubmit={console.log}
-                steps={[
-                  // ─────────────────────────
-                  // ETAPE 1
-                  {
-                    title: 'Information Personnelles',
-                    fields: [
-                      { name: 'name', label: 'Nom', type: 'text' },
-                      { name: 'age', label: 'Age', type: 'number' },
-                    ],
-                    isNextDisabled(values) {
-                      // pour la validation des champs  avant de passer a l'etape suivant
-                      return !values.name || !values.age;
-                    },
-                    onStepComplete(formData) {
-                      // fonction appler lorsque le user clique sur Next
-                      console.log('data', formData);
-                      return Promise.resolve(formData);
-                    },
+            <StepFormBuilder
+              onSubmit={console.log}
+              steps={[
+                // ─────────────────────────
+                // ETAPE 1
+                {
+                  title: 'Information Personnelles',
+                  fields: [
+                    { name: 'name', label: 'Nom', type: 'text' },
+                    { name: 'age', label: 'Age', type: 'number' },
+                  ],
+                  isNextDisabled(values) {
+                    // pour la validation des champs  avant de passer a l'etape suivant
+                    return !values.name || !values.age;
                   },
+                  onStepComplete(formData) {
+                    // fonction appler lorsque le user clique sur Next
+                    console.log('data', formData);
+                    return Promise.resolve(formData);
+                  },
+                },
 
-                  // ─────────────────────────
-                  // ETAPE 2
-                  {
-                    title: 'Information Legales',
-                    fields: [
-                      {
-                        name: 'is_married',
-                        label: 'Êtes-vous mariez?',
-                        type: 'select',
-                        options: data.marital_status,
-                        validation: {
-                          required: { value: true, message: 'Requis' },
+                // AJOUTÉ : NOUVELLE ETAPE (Choix Radio Button)
+                {
+                  title: 'Profil',
+                  fields: [
+                    {
+                      name: 'gender',
+                      label: 'Quel est votre sexe ?',
+                      type: 'radio',
+                      options: data.gender_options,
+                      validation: {
+                        required: {
+                          value: true,
+                          message: 'Sélectionnez une option',
                         },
                       },
-                      {
-                        name: 'married',
-                        label: 'Nom du conjoint',
-                        type: 'text',
-                        showWhen: { field: 'is_married', value: 'Oui' },
-                      },
-                      {
-                        name: 'is_worker',
-                        label: 'Travaillez-vous?',
-                        type: 'checkbox',
-                      },
-                    ],
-                    onStepComplete(formData) {
-                      console.log('data', formData);
-                      return Promise.resolve(formData);
                     },
+                  ],
+                  isNextDisabled: (values) => !values.gender,
+                },
+
+                // ETAPE 2
+                {
+                  title: 'Information Legales',
+                  fields: [
+                    {
+                      name: 'is_married',
+                      label: 'Êtes-vous mariez?',
+                      type: 'select',
+                      options: data.marital_status,
+                      validation: {
+                        required: { value: true, message: 'Requis' },
+                      },
+                    },
+                    {
+                      name: 'married',
+                      label: 'Nom du conjoint',
+                      type: 'text',
+                      showWhen: { field: 'is_married', value: 'Oui' },
+                    },
+
+                    {
+                      name: 'is_worker',
+                      label: 'Travaillez-vous?',
+                      type: 'checkbox',
+                    },
+                  ],
+                  // AJOUT DE LA LOGIQUE DE VALIDATION pour le champ conjoint
+                  isNextDisabled(values) {
+                    const isMarriedSelected = values.is_married === 'Oui';
+                    const spouseNameEmpty =
+                      !values.married || values.married.trim() === '';
+
+                    // On bloque si :
+                    // 1. Le statut marital n'est pas sélectionné
+                    // 2. OU si "Oui" est coché MAIS que le nom du conjoint est vide
+                    if (!values.is_married) return true;
+                    if (isMarriedSelected && spouseNameEmpty) return true;
+
+                    return false;
+                  },
+                  onStepComplete(formData) {
+                    console.log('data', formData);
+                    return Promise.resolve(formData);
+                  },
+                },
+
+                // ─────────────────────────
+                // ETAPE 3
+                {
+                  title: 'Localisation',
+                  fields: [
+                    {
+                      name: 'country',
+                      label: 'Pays',
+                      type: 'select',
+                      options: data.countries,
+                      validation: {
+                        required: { value: true, message: 'Requis' },
+                      },
+                    },
+                    {
+                      name: 'city',
+                      label: 'Ville',
+                      type: 'text',
+                      validation: {
+                        required: { value: true, message: 'Requis' },
+                      },
+                    },
+                    {
+                      name: 'region',
+                      label: 'Région',
+                      type: 'select',
+                      showWhen: { field: 'country', value: 'CM' },
+                      options: data.regions_cameroun,
+                    },
+                  ],
+                  // AJOUT DE LA LOGIQUE DE VALIDATION CONDITIONNELLE
+                  isNextDisabled(values) {
+                    // 1. Validation de base : Pays et Ville sont obligatoires dans tous les cas
+                    if (!values.country || !values.city) {
+                      return true;
+                    }
+
+                    // 2. Validation conditionnelle : Si le pays est le Cameroun ('CM')
+                    if (values.country === 'CM') {
+                      // On bloque si la région n'est pas sélectionnée
+                      if (!values.region) {
+                        return true;
+                      }
+                    }
+
+                    // Si toutes les conditions sont remplies, on active le bouton
+                    return false;
+                  },
+                  onStepComplete(formData) {
+                    console.log('étape 3:', formData);
+                    return Promise.resolve(formData);
+                  },
+                },
+
+                // ─────────────────────────
+                // ETAPE 4 (CHOIX PAIEMENT)
+                {
+                  title: 'Moyen de paiement',
+                  type: 'custom',
+                  buttonPosition: 'center',
+                  isNextDisabled: !selectedMethod,
+                  render: () => (
+                    <>
+                      <Text style={styles.subtitle}>
+                        Sélectionnez votre moyen de paiement
+                      </Text>
+
+                      <PaymentSelector
+                        features={paymentFeatures}
+                        paymentLoading={paymentLoading}
+                        selectedMethod={selectedMethod}
+                        onSelect={(m) => setSelectedMethod(m)}
+                        title="Paiement"
+                      />
+                    </>
+                  ),
+                  onStepComplete: async () => {
+                    if (!selectedMethod) {
+                      throw new Error('Veuillez sélectionner un moyen');
+                    }
+
+                    await getFees(); // pour recuperer les fees
+
+                    return {
+                      selectedMethodId: selectedMethod.serviceFeatureId,
+                    };
+                  },
+                },
+
+                // ─────────────────────────
+                // ETAPE 5 (RECAP + SUBMIT AUTO)
+                {
+                  title: 'Récapitulatif',
+                  type: 'custom',
+
+                  fields: getPaymentConfig(selectedMethod)?.requiresPin
+                    ? [
+                        {
+                          name: 'pinCode',
+                          label: 'Code PIN',
+                          type: 'password',
+                          validation: {
+                            required: { value: true, message: 'PIN requis' },
+                            minLength: { value: 4, message: '4 chiffres' },
+                            maxLength: {
+                              value: 4,
+                              message: '4 chiffres maximum',
+                            },
+                          },
+                        },
+                      ]
+                    : [
+                        {
+                          name: 'phoneNumber',
+                          label: 'Téléphone',
+                          type: 'phone',
+                          validation: {
+                            required: {
+                              value: true,
+                              message: 'Téléphone requis',
+                            },
+                            minLength: { value: 9, message: '9 chiffres' },
+                            maxLength: {
+                              value: 9,
+                              message: '9 chiffres maximum',
+                            },
+                          },
+                        },
+                      ],
+
+                  isNextDisabled: (v: any) => {
+                    const config = getPaymentConfig(selectedMethod);
+                    if (!config) return true;
+
+                    if (config.requiresPin) {
+                      return (v.pinCode?.length ?? 0) !== 4;
+                    }
+                    return (v.phoneNumber?.length ?? 0) < 9;
                   },
 
-                  // ─────────────────────────
-                  // ETAPE 3
-                  {
-                    title: 'Localisation',
-                    fields: [
-                      {
-                        name: 'country',
-                        label: 'Pays',
-                        type: 'select',
-                        options: data.countries,
-                        validation: {
-                          required: { value: true, message: 'Requis' },
-                        },
-                      },
-                      {
-                        name: 'city',
-                        label: 'Ville',
-                        type: 'text',
-                        validation: {
-                          required: { value: true, message: 'Requis' },
-                        },
-                      },
-                      {
-                        name: 'region',
-                        label: 'Région',
-                        type: 'select',
-                        showWhen: { field: 'country', value: 'CM' },
-                        options: data.regions_cameroun,
-                      },
-                    ],
-                    onStepComplete(formData) {
-                      console.log('étape 3:', formData);
-                      return Promise.resolve(formData);
-                    },
-                  },
+                  render: () => {
+                    const totalFees =
+                      (fees?.financialFees ?? 0) +
+                      (fees?.collectReceiverFinancialFees ?? 0);
 
-                  // ─────────────────────────
-                  // ETAPE 4 (CHOIX PAIEMENT)
-                  {
-                    title: 'Moyen de paiement',
-                    type: 'custom',
-                    buttonPosition: 'center',
-                    isNextDisabled: !selectedMethod,
-                    render: () => (
+                    const total = invoice.amount + totalFees;
+
+                    return (
                       <>
-                        <Text style={styles.subtitle}>
-                          Sélectionnez votre moyen de paiement
-                        </Text>
-
-                        <PaymentSelector
-                          features={paymentFeatures}
-                          paymentLoading={paymentLoading}
-                          selectedMethod={selectedMethod}
-                          onSelect={(m) => setSelectedMethod(m)}
-                          title="Paiement"
-                        />
-                      </>
-                    ),
-                    onStepComplete: async () => {
-                      if (!selectedMethod) {
-                        throw new Error('Veuillez sélectionner un moyen');
-                      }
-
-                      await getFees(); // pour recuperer les fees
-
-                      return {
-                        selectedMethodId: selectedMethod.serviceFeatureId,
-                      };
-                    },
-                  },
-
-                  // ─────────────────────────
-                  // ETAPE 5 (RECAP + SUBMIT AUTO)
-                  {
-                    title: 'Récapitulatif',
-                    type: 'custom',
-
-                    fields: getPaymentConfig(selectedMethod)?.requiresPin
-                      ? [
-                          {
-                            name: 'pinCode',
-                            label: 'Code PIN',
-                            type: 'password',
-                            validation: {
-                              required: { value: true, message: 'PIN requis' },
-                              minLength: { value: 4, message: '4 chiffres' },
-                            },
-                            //editable: (v: any) => (v.pinCode?.length ?? 0) < 4
-                          },
-                        ]
-                      : [
-                          {
-                            name: 'phoneNumber',
-                            label: 'Téléphone',
-                            type: 'phone',
-                            validation: {
-                              required: {
-                                value: true,
-                                message: 'Téléphone requis',
-                              },
-                              minLength: { value: 9, message: '9 chiffres' },
-                            },
-                          },
-                        ],
-
-                    isNextDisabled: (v: any) => {
-                      const config = getPaymentConfig(selectedMethod);
-                      if (!config) return true;
-
-                      if (config.requiresPin) {
-                        return (v.pinCode?.length ?? 0) !== 4;
-                      }
-                      return (v.phoneNumber?.length ?? 0) < 9;
-                    },
-
-                    render: () => {
-                      const totalFees =
-                        (fees?.financialFees ?? 0) +
-                        (fees?.collectReceiverFinancialFees ?? 0);
-
-                      const total = invoice.amount + totalFees;
-
-                      return (
-                        <>
-                          {/* CARD STYLE IDENTIQUE */}
-                          <View style={styles.invoiceCard}>
-                            <Text style={styles.invoiceTitle}>
-                              Paiement de facture - {invoice.name}
-                            </Text>
-
-                            <View style={styles.divider} />
-
-                            <Text style={styles.invoiceLine}>
-                              Référence :{' '}
-                              <Text style={styles.invoiceValue}>
-                                {invoice.reference}
-                              </Text>
-                            </Text>
-
-                            <Text style={styles.invoiceLine}>
-                              Montant :{' '}
-                              <Text style={styles.invoiceValueBold}>
-                                {formatAmount(invoice.amount)}
-                              </Text>
-                            </Text>
-
-                            <View style={styles.divider} />
-
-                            <Text style={styles.invoiceLine}>
-                              Frais de service :{' '}
-                              <Text style={styles.invoiceValueBold}>
-                                {formatAmount(fees?.financialFees ?? 0)}
-                              </Text>
-                            </Text>
-
-                            <Text style={styles.invoiceLine}>
-                              Montant total :{' '}
-                              <Text style={styles.invoiceValueBold}>
-                                {formatAmount(
-                                  invoice.amount + (fees?.financialFees ?? 0)
-                                )}
-                              </Text>
-                            </Text>
-
-                            <Text style={styles.invoiceLine}>
-                              Frais opérateur :{' '}
-                              <Text style={styles.invoiceValueBold}>
-                                {formatAmount(
-                                  fees?.collectReceiverFinancialFees ?? 0
-                                )}
-                              </Text>
-                            </Text>
-
-                            <View style={styles.divider} />
-
-                            <Text style={styles.invoiceTotal}>
-                              Montant à payer : {formatAmount(total)}
-                            </Text>
-                          </View>
-
-                          {/* PAYER AVEC */}
-                          <Text style={styles.payerAvecLabel}>
-                            Payer avec :
+                        {/* CARD STYLE IDENTIQUE */}
+                        <View style={styles.invoiceCard}>
+                          <Text style={styles.invoiceTitle}>
+                            Paiement de facture - {invoice.name}
                           </Text>
 
-                          <View style={styles.selectedPaymentRow}>
-                            <Image
-                              source={{ uri: selectedMethod?.logo }}
-                              style={styles.logo}
-                            />
-                            <Text style={styles.paymentText}>
-                              {selectedMethod?.name}
+                          <View style={styles.divider} />
+
+                          <Text style={styles.invoiceLine}>
+                            Référence :{' '}
+                            <Text style={styles.invoiceValue}>
+                              {invoice.reference}
                             </Text>
-                          </View>
-                        </>
-                      );
-                    },
+                          </Text>
 
-                    //  SUBMISSION AUTOMATIQUE
-                    onStepComplete: async (values) => {
-                      const config = getPaymentConfig(selectedMethod);
+                          <Text style={styles.invoiceLine}>
+                            Montant :{' '}
+                            <Text style={styles.invoiceValueBold}>
+                              {formatAmount(invoice.amount)}
+                            </Text>
+                          </Text>
 
-                      const payload = {
-                        invoice,
-                        fees: {
-                          ...fees,
-                          total:
-                            invoice.amount +
-                            (fees?.financialFees ?? 0) +
-                            (fees?.collectReceiverFinancialFees ?? 0),
-                        },
-                        payment: {
-                          serviceFeatureId: selectedMethod?.serviceFeatureId,
-                          method: selectedMethod?.name,
-                          ...(config?.requiresPin && { pin: values.pinCode }),
-                          ...(config?.requiresPhone && {
-                            phoneNumber: values.phoneNumber,
-                          }),
-                        },
-                      };
+                          <View style={styles.divider} />
 
-                      console.log('Paiement envoyé:', payload);
+                          <Text style={styles.invoiceLine}>
+                            Frais de service :{' '}
+                            <Text style={styles.invoiceValueBold}>
+                              {formatAmount(fees?.financialFees ?? 0)}
+                            </Text>
+                          </Text>
 
-                      return payload; // déclenche la soumission globale
-                    },
+                          <Text style={styles.invoiceLine}>
+                            Montant total :{' '}
+                            <Text style={styles.invoiceValueBold}>
+                              {formatAmount(
+                                invoice.amount + (fees?.financialFees ?? 0)
+                              )}
+                            </Text>
+                          </Text>
+
+                          <Text style={styles.invoiceLine}>
+                            Frais opérateur :{' '}
+                            <Text style={styles.invoiceValueBold}>
+                              {formatAmount(
+                                fees?.collectReceiverFinancialFees ?? 0
+                              )}
+                            </Text>
+                          </Text>
+
+                          <View style={styles.divider} />
+
+                          <Text style={styles.invoiceTotal}>
+                            Montant à payer : {formatAmount(total)}
+                          </Text>
+                        </View>
+
+                        {/* PAYER AVEC */}
+                        <Text style={styles.payerAvecLabel}>Payer avec :</Text>
+
+                        <View style={styles.selectedPaymentRow}>
+                          <Image
+                            source={{ uri: selectedMethod?.logo }}
+                            style={styles.logo}
+                          />
+                          <Text style={styles.paymentText}>
+                            {selectedMethod?.name}
+                          </Text>
+                        </View>
+                      </>
+                    );
                   },
-                  {
-                    title: 'Information Personnelles',
-                    fields: [
-                      { name: 'name', label: 'Nom', type: 'text' },
-                      { name: 'sexe', label: 'sexe', type: 'text' },
-                    ],
-                    isNextDisabled(values) {
-                      // pour la validation des champs  avant de passer a l'etape suivant
-                      return !values.name || !values.age;
-                    },
-                    onStepComplete(formData) {
-                      // fonction appler lorsque le user clique sur Next
-                      console.log('data', formData);
-                      return Promise.resolve(formData);
-                    },
+
+                  //  SUBMISSION AUTOMATIQUE
+                  onStepComplete: async (values) => {
+                    const config = getPaymentConfig(selectedMethod);
+
+                    const payload = {
+                      invoice,
+                      fees: {
+                        ...fees,
+                        total:
+                          invoice.amount +
+                          (fees?.financialFees ?? 0) +
+                          (fees?.collectReceiverFinancialFees ?? 0),
+                      },
+                      payment: {
+                        serviceFeatureId: selectedMethod?.serviceFeatureId,
+                        method: selectedMethod?.name,
+                        ...(config?.requiresPin && { pin: values.pinCode }),
+                        ...(config?.requiresPhone && {
+                          phoneNumber: values.phoneNumber,
+                        }),
+                      },
+                    };
+
+                    console.log('Paiement envoyé:', payload);
+
+                    return payload; // déclenche la soumission globale
                   },
-                ]}
-                defaultValues={{ name: 'cedigno', is_worker: true }}
-                externalValues={{}}
-                onError={console.error}
-                onExternalValueChange={console.warn}
-              />
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </PaperProvider>
-    </SafeAreaProvider>
+                },
+                {
+                  title: 'Information Personnelles',
+                  fields: [
+                    { name: 'name', label: 'Nom', type: 'date' },
+                    { name: 'sexe', label: 'sexe', type: 'text' },
+                  ],
+                  isNextDisabled(values) {
+                    // pour la validation des champs  avant de passer a l'etape suivant
+                    return !values.name || !values.age;
+                  },
+                  onStepComplete(formData) {
+                    // fonction appelée lorsque le user clique sur Next
+                    console.log('data', formData);
+                    return Promise.resolve(formData);
+                  },
+                },
+              ]}
+              defaultValues={{ name: 'cedigno', is_worker: true }}
+              externalValues={{}}
+              onError={console.error}
+              onExternalValueChange={console.warn}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </PaperProvider>
   );
 }
 

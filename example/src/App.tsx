@@ -127,8 +127,6 @@ export default function App() {
             <StepFormBuilder
               onSubmit={console.log}
               steps={[
-                // ─────────────────────────
-                // ETAPE 1
                 {
                   title: 'Information Personnelles',
                   fields: [
@@ -144,6 +142,26 @@ export default function App() {
                     console.log('data', formData);
                     return Promise.resolve(formData);
                   },
+                },
+
+                {
+                  title: 'Informations Personnelles',
+                  fields: [
+                    {
+                      name: 'name',
+                      label: 'Nom complet',
+                      type: 'text',
+                      validation: { required: 'Nom requis' },
+                    },
+                    {
+                      name: 'bio',
+                      label: 'Ma biographie',
+                      type: 'multiline',
+                      placeholder: 'Parlez-nous de vous...',
+                      validation: { maxLength: 200 }, // pour limiter le nombre de caractere
+                    },
+                  ],
+                  isNextDisabled: (values) => !values.name,
                 },
 
                 // AJOUTÉ : NOUVELLE ETAPE (Choix Radio Button)
@@ -164,6 +182,141 @@ export default function App() {
                     },
                   ],
                   isNextDisabled: (values) => !values.gender,
+                },
+                //
+                // // ÉTAPE 1 : IDENTITÉ
+                {
+                  title: 'Informations Personnelles',
+                  fields: [
+                    {
+                      name: 'email', // Changé 'name' par 'email' pour la cohérence
+                      label: 'Email',
+                      type: 'email',
+                      validation: {
+                        required: 'Email requis',
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: "Format d'email invalide",
+                        },
+                      },
+                    },
+                    {
+                      name: 'show_bio',
+                      label: 'Souhaitez-vous ajouter une biographie ?',
+                      type: 'switch',
+                      defaultValue: false,
+                    },
+                    {
+                      name: 'bio',
+                      label: 'Ma biographie',
+                      type: 'multiline',
+                      placeholder: 'Parlez-nous de vous...',
+                      showWhen: { field: 'show_bio', value: true },
+                      validation: {
+                        maxLength: 200,
+                        required:
+                          "La biographie est requise si l'option est activée",
+                      },
+                    },
+                    {
+                      name: 'accept_terms',
+                      label: "Accepter les conditions d'utilisation",
+                      type: 'switch',
+                      defaultValue: false, // Important pour TypeScript
+                      validation: {
+                        required: 'Vous devez accepter pour continuer',
+                      },
+                    },
+                  ],
+                  isNextDisabled: (values) => {
+                    // On utilise les nouveaux noms de champs ici
+                    const emailValid =
+                      !!values.email &&
+                      /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(
+                        values.email
+                      );
+                    const bioValid = values.show_bio
+                      ? !!values.bio && values.bio.length > 0
+                      : true;
+                    const termsValid = !!values.accept_terms;
+
+                    return !emailValid || !bioValid || !termsValid;
+                  },
+                },
+
+                {
+                  title: 'Justificatifs',
+                  fields: [
+                    {
+                      name: 'id_type',
+                      label: "Type de pièce d'identité",
+                      type: 'select',
+                      options: [
+                        { label: 'CNI', value: 'cni' },
+                        { label: 'Passeport', value: 'passport' },
+                      ],
+                      validation: { required: 'Ce choix est obligatoire' },
+                    },
+                    {
+                      name: 'id_file',
+                      label: 'Télécharger le document',
+                      type: 'file',
+                      // On affiche ce champ uniquement si un type de pièce est choisi
+                      showWhen: { field: 'id_type', condition: (val) => !!val },
+                      //showWhen: { field: 'id_type', value: 'cni' },
+                      validation: {
+                        required: 'Veuillez joindre votre document',
+                      },
+                    },
+                  ],
+                  // AC2 : Fiabilisation de la condition de passage à la suite
+                  isNextDisabled(values) {
+                    return !values.id_type || !values.id_file;
+                  },
+                  onStepComplete(formData) {
+                    console.log(
+                      'Documents prêts pour upload:',
+                      formData.id_file
+                    );
+                    return Promise.resolve(formData);
+                  },
+                },
+
+                // ETAPE
+
+                {
+                  title: 'Informations de naissance',
+                  fields: [
+                    {
+                      name: 'birthDate', // Nom unique pour la date
+                      label: 'Date de naissance',
+                      type: 'date',
+                      validation: { required: 'La date est obligatoire' },
+                    },
+                    {
+                      name: 'gender_manual',
+                      label: 'Sexe',
+                      type: 'text',
+                      placeholder: 'Ex: Masculin',
+                    },
+                  ],
+                  isNextDisabled(values) {
+                    // On vérifie que birthDate existe et est bien une instance de Date
+                    const hasDate = values.birthDate instanceof Date;
+                    const hasGender =
+                      values.gender_manual &&
+                      values.gender_manual.trim() !== '';
+
+                    return !hasDate || !hasGender;
+                  },
+                  onStepComplete(formData) {
+                    // La date sera un objet Date JS ici
+                    console.log(
+                      'Date sélectionnée :',
+                      formData.birthDate.toLocaleDateString()
+                    );
+                    return Promise.resolve(formData);
+                  },
                 },
 
                 // ETAPE 2
@@ -464,7 +617,13 @@ export default function App() {
                 {
                   title: 'Information Personnelles',
                   fields: [
-                    { name: 'name', label: 'Nom', type: 'date' },
+                    // name: 'birthDate', // Nom unique pour la date
+                    // label: 'Date de naissance',
+                    {
+                      name: 'birthDate',
+                      label: 'Date de naissance',
+                      type: 'date',
+                    },
                     { name: 'sexe', label: 'sexe', type: 'text' },
                   ],
                   isNextDisabled(values) {

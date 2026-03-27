@@ -8,10 +8,136 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
-import { Checkbox, HelperText, Text, TextInput } from 'react-native-paper';
+import {
+  Checkbox,
+  HelperText,
+  Text,
+  TextInput,
+  RadioButton,
+} from 'react-native-paper';
 import { Controller } from 'react-hook-form';
 import type { StepFormFieldProps } from '../types';
 import { MaterialIcons } from '@expo/vector-icons';
+// AJOUTÉ : Import pour la sélection de fichiers
+//import * as DocumentPicker from 'expo-document-picker';
+
+// ── FileField (Composant interne pour le type file) ───────────────────────────────
+// AJOUTÉ : Nouveau composant pour gérer la sélection de documents
+/*function FileField({
+  label,
+  value,
+  onChange,
+  error,
+  disabled,
+}: {
+  label: string;
+  value: any;
+  onChange: (val: any) => void;
+  error?: boolean;
+  disabled?: boolean;
+}) {
+  const handlePickDocument = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: '*
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled) {
+        onChange(result.assets[0]);
+      }
+    } catch (err) {
+      console.error("Erreur lors de la sélection du fichier:", err);
+    }
+  };
+
+  return (
+    <View style={fileStyles.container}>
+      <Text style={[fileStyles.label, error && fileStyles.labelError]}>{label}</Text>
+      
+      <View style={[
+        fileStyles.dropZone,
+        error ? fileStyles.dropZoneError : fileStyles.dropZoneDefault,
+        disabled && fileStyles.disabled
+      ]}>
+        {!value ? (
+          <TouchableOpacity 
+            style={fileStyles.innerBtn} 
+            onPress={handlePickDocument}
+            disabled={disabled}
+          >
+            <MaterialIcons name="cloud-upload" size={28} color={disabled ? "#ccc" : "#6200ee"} />
+            <Text style={fileStyles.placeholder}>Cliquez pour choisir un fichier</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={fileStyles.fileInfoRow}>
+            <MaterialIcons name="insert-drive-file" size={24} color="#6200ee" />
+            <View style={fileStyles.textContainer}>
+              <Text numberOfLines={1} style={fileStyles.fileName}>{value.name}</Text>
+              {value.size && (
+                <Text style={fileStyles.fileSize}>
+                  {(value.size / 1024 / 1024).toFixed(2)} MB
+                </Text>
+              )}
+            </View>
+            <IconButton 
+              icon="close" 
+              size={20} 
+              onPress={() => onChange(null)} 
+              disabled={disabled}
+            />
+          </View>
+        )}
+      </View>
+    </View>
+  );
+}*/
+
+// ── RadioField (Composant interne pour le type radio) ───────────────────────────────
+// AJOUTÉ : Nouveau composant pour gérer l'affichage des boutons radio
+function RadioField({
+  label,
+  value,
+  options = [],
+  onChange,
+  disabled,
+}: {
+  label: string;
+  value: string;
+  options: Array<{ label: string; value: string }>;
+  onChange: (val: string) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <View style={radioStyles.container}>
+      <Text style={radioStyles.groupLabel}>{label}</Text>
+      <RadioButton.Group onValueChange={onChange} value={value}>
+        {options.map((option) => (
+          <TouchableOpacity
+            key={option.value}
+            onPress={() => !disabled && onChange(option.value)}
+            style={radioStyles.radioOption}
+            activeOpacity={0.6}
+          >
+            <RadioButton.Android
+              value={option.value}
+              disabled={disabled}
+              color="#6200ee"
+            />
+            <Text
+              style={[
+                radioStyles.optionLabel,
+                disabled && radioStyles.disabled,
+              ]}
+            >
+              {option.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </RadioButton.Group>
+    </View>
+  );
+}
 
 // ── SelectField (bottom sheet natif, sans Menu, pour gerer le select avec react-hook-form) ───────────────────────────────
 function SelectField({
@@ -181,6 +307,7 @@ export function StepFormField({
     placeholder,
     validation,
     disabled,
+    maxLength, // AJOUTÉ : Récupération du maxLength depuis la config
     options,
     leftIcon: LeftIcon,
     rightIcon: RightIcon,
@@ -201,6 +328,13 @@ export function StepFormField({
   };
 
   const isSecureField = type === 'password';
+  // On vérifie si maxLength est un objet ou un nombre pour éviter l'erreur TS
+  const validationLimit =
+    typeof validation?.maxLength === 'object'
+      ? validation.maxLength.value
+      : validation?.maxLength;
+
+  const limit = maxLength ?? validationLimit;
 
   return (
     <View style={styles.container}>
@@ -209,70 +343,103 @@ export function StepFormField({
         name={name}
         rules={validation}
         defaultValue={defaultValue}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <>
-            {type === 'checkbox' ? (
-              <View style={styles.checkboxContainer}>
-                <Text variant="bodyMedium">{label}</Text>
-                <Checkbox
-                  onPress={() => onChange(!value)}
-                  status={value ? 'checked' : 'unchecked'}
+        render={({ field: { onChange, onBlur, value } }) => {
+          // AJOUTÉ : Gestion du changement de texte pour filtrer et limiter
+          const handleTextChange = (text: string) => {
+            let transformedText = text;
+
+            // 1. Filtrage pour types numériques
+            if (type === 'number' || type === 'phone') {
+              transformedText = text.replace(/[^0-9]/g, '');
+            }
+
+            // 2. Application de la limite de longueur
+            if (limit && transformedText.length > limit) {
+              return; // On ignore la saisie
+            }
+
+            onChange(transformedText);
+          };
+
+          return (
+            <>
+              {type === 'checkbox' ? (
+                <View style={styles.checkboxContainer}>
+                  <Text variant="bodyMedium">{label}</Text>
+                  <Checkbox
+                    onPress={() => onChange(!value)}
+                    status={value ? 'checked' : 'unchecked'}
+                  />
+                </View>
+              ) : type === 'select' ? (
+                <SelectField
+                  label={label}
+                  value={value}
+                  options={options ?? []}
+                  onChange={onChange}
+                  error={!!error}
+                  disabled={disabled}
+                  placeholder={placeholder}
                 />
-              </View>
-            ) : type === 'select' ? (
-              <SelectField
-                label={label}
-                value={value}
-                options={options ?? []}
-                onChange={onChange}
-                error={!!error}
-                disabled={disabled}
-                placeholder={placeholder}
-              />
-            ) : (
-              <TextInput
-                label={label}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                error={!!error}
-                disabled={disabled}
-                /* editable={
-  typeof field.editable === 'function'
-    ? field.editable(formValues ?? {})
-    : true
-}*/
-                mode="outlined"
-                placeholder={placeholder}
-                keyboardType={getKeyboardType()}
-                secureTextEntry={isSecureField && !secureTextVisible}
-                autoCapitalize={type === 'email' ? 'none' : 'sentences'}
-                autoComplete={type === 'email' ? 'email' : 'off'}
-                autoCorrect={false}
-                left={LeftIcon?.()}
-                right={
-                  isSecureField ? (
-                    <TextInput.Icon
-                      icon={() => inputProps?.right}
-                      onPress={() => setSecureTextVisible((p) => !p)}
-                      forceTextInputFocus={false}
-                    />
-                  ) : (
-                    RightIcon?.()
-                  )
-                }
-                style={styles.input}
-                theme={{ roundness: 8 }}
-                {...inputProps}
-              />
-            )}
-            {error && (
-              <HelperText type="error" visible={!!error}>
-                {error.message?.toString()}
-              </HelperText>
-            )}
-          </>
-        )}
+              ) : type === 'radio' ? (
+                // AJOUTÉ : Gestion du type radio dans le switch de rendu
+                <RadioField
+                  label={label}
+                  value={value}
+                  options={options ?? []}
+                  onChange={onChange}
+                  disabled={disabled}
+                />
+              ) : (
+                <TextInput
+                  //label={label}
+                  // AJOUTÉ : Affichage du compteur si une limite existe
+                  label={
+                    limit
+                      ? `${label} (${(value ?? '').length}/${limit})`
+                      : label
+                  }
+                  onBlur={onBlur}
+                  //onChangeText={onChange}
+                  onChangeText={handleTextChange} // MODIFIÉ
+                  value={value}
+                  error={!!error}
+                  disabled={disabled}
+                  mode="outlined"
+                  placeholder={placeholder}
+                  keyboardType={getKeyboardType()}
+                  secureTextEntry={isSecureField && !secureTextVisible}
+                  autoCapitalize={type === 'email' ? 'none' : 'sentences'}
+                  autoComplete={type === 'email' ? 'email' : 'off'}
+                  autoCorrect={false}
+                  maxLength={limit} // securiter
+                  left={LeftIcon?.()}
+                  right={
+                    isSecureField ? (
+                      <TextInput.Icon
+                        //icon={() => inputProps?.right}
+                        //onPress={() => setSecureTextVisible((p) => !p)}
+                        icon={secureTextVisible ? 'eye-off' : 'eye'} // MODIFIÉ pour icône dynamique
+                        onPress={() => setSecureTextVisible((p) => !p)}
+                        forceTextInputFocus={false}
+                      />
+                    ) : (
+                      RightIcon?.()
+                    )
+                  }
+                  style={styles.input}
+                  theme={{ roundness: 8 }}
+                  {...inputProps}
+                />
+              )}
+              {error && (
+                <HelperText type="error" visible={!!error}>
+                  {error.message?.toString()}
+                </HelperText>
+              )}
+            </>
+          );
+        }}
       />
     </View>
   );
@@ -352,5 +519,54 @@ const sheetStyles = StyleSheet.create({
   },
   optionSelected: { backgroundColor: '#F3F0FF' },
   optionText: { fontSize: 16, color: '#212121' },
-  optionTextSelected: { color: '#6200ee', fontWeight: '500' },
+  optionTextSelected: {
+    color: '#6200ee',
+    fontWeight: '500',
+  },
 });
+
+// AJOUTÉ : Styles pour le composant Radio
+const radioStyles = StyleSheet.create({
+  container: { marginBottom: 8 },
+  groupLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+    fontWeight: '500',
+  },
+  radioOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 2,
+    paddingVertical: 4,
+  },
+  optionLabel: { fontSize: 16, color: '#212121', marginLeft: 8 },
+  disabled: {
+    opacity: 0.5,
+  },
+});
+
+// AJOUTÉ : Styles pour le composant FileField
+// AJOUTÉ : Styles pour le composant FileField
+/*const fileStyles = StyleSheet.create({
+  container: { marginBottom: 8 },
+  label: { fontSize: 12, color: '#6200ee', marginBottom: 4, fontWeight: '500', marginLeft: 4 },
+  labelError: { color: '#B00020' },
+  dropZone: {
+    borderWidth: 1.5,
+    borderRadius: 8,
+    borderStyle: 'dashed',
+    minHeight: 64,
+    justifyContent: 'center',
+    backgroundColor: '#fafafa',
+  },
+  dropZoneDefault: { borderColor: '#9E9E9E' },
+  dropZoneError: { borderColor: '#B00020', backgroundColor: '#fff8f8' },
+  innerBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 12 },
+  placeholder: { marginLeft: 10, color: '#757575', fontSize: 14 },
+  fileInfoRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 },
+  textContainer: { flex: 1, marginLeft: 12 },
+  fileName: { fontSize: 14, color: '#212121', fontWeight: '500' },
+  fileSize: { fontSize: 11, color: '#757575' },
+  disabled: { opacity: 0.5 },
+});*/

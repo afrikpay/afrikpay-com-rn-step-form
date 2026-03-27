@@ -8,10 +8,10 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Button, PaperProvider } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import { useForm } from 'react-hook-form';
 import { StepFormField } from './StepFormField';
-import type { FormData, FormStep, StepFormBuilderProps } from '../types'; // les types pour le formulaire
+import type { FormData, FormStep, StepFormBuilderProps } from '../types';
 import { StepFormHeader } from './StepFormHeader';
 import { COLORS } from '../../constantes/color';
 
@@ -94,7 +94,7 @@ export default function StepFormBuilder({
   const contentAlign = currentStepConfig?.contentAlign ?? 'top';
 
   const watchedValues = watch(); // récupère les valeurs des champs(formulaires)
-  const formValues = watchedValues; // alias lisible pour le JSX
+  const formValues = watchedValues;
   const isNextDisabled =
     typeof currentStepConfig?.isNextDisabled === 'function'
       ? currentStepConfig.isNextDisabled(watchedValues) // si isNextDisabled est une fonction
@@ -223,99 +223,89 @@ export default function StepFormBuilder({
 
   return (
     // keyboardAvoidingView: pousse le contenue au dessus du clavier
-    <PaperProvider>
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 20}
-      >
-        <View style={styles.container}>
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={[
-              styles.contentContainer,
-              isFixedPosition
-                ? styles.contentContainerFixed
-                : styles.contentContainerNatural,
+
+    <KeyboardAvoidingView
+      style={styles.keyboardAvoidingView}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 20}
+    >
+      <View style={styles.container}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={[
+            styles.contentContainer,
+            isFixedPosition
+              ? styles.contentContainerFixed
+              : styles.contentContainerNatural,
+          ]}
+          showsVerticalScrollIndicator={false}
+          //keyboardShouldPersistTaps="always"
+          keyboardShouldPersistTaps="handled" // permet de taper sans que le clavier disparaisse
+        >
+          <StepFormHeader
+            steps={steps}
+            currentStep={currentStep}
+            data={formValues}
+          />
+
+          <Animated.View
+            style={[
+              styles.fieldsContainer,
+              {
+                opacity: fadeAnim,
+                justifyContent: justifyContentMap[contentAlign],
+              },
             ]}
-            showsVerticalScrollIndicator={false}
-            //keyboardShouldPersistTaps="always"
-            keyboardShouldPersistTaps="handled" // permet de taper sans que le clavier disparaisse
           >
-            <StepFormHeader
-              steps={steps}
-              currentStep={currentStep}
-              data={formValues}
-            />
-
-            <Animated.View
-              style={[
-                styles.fieldsContainer,
-                {
-                  opacity: fadeAnim,
-                  justifyContent: justifyContentMap[contentAlign],
-                },
-              ]}
-            >
-              {/* render ET fields coexistent (étape custom avec champs) */}
-              {currentStepConfig.render?.(
-                getValues(),
-                () => {},
-                () => {}
-              )}
-
-              {currentStepConfig.fields?.map((field) => {
-                /*console.log(
-                  'field:',
-                  field.name,
-                  '| showWhen:',
-                  field.showWhen,
-                  '| watchedValues:',
-                  watchedValues
-                );*/
-                // Vérifier la condition showWhen
-                if (field.showWhen) {
-                  const { field: watchedField, value: expectedValue } =
-                    field.showWhen;
-                  if (watchedValues[watchedField] !== expectedValue) {
-                    return null; // cacher le champ
-                  }
-                }
-
-                return (
-                  <StepFormField
-                    key={field.name}
-                    field={field}
-                    control={control}
-                    error={errors[field.name]}
-                    defaultValue={defaultValues?.[field.name]}
-                    //formValues={watchedValues}
-                  />
-                );
-              })}
-            </Animated.View>
-
-            {!isFixedPosition && (
-              <View style={styles.buttonsContainerInline}>
-                <ButtonsRow {...buttonsRowProps} />
-              </View>
+            {/* render ET fields coexistent (étape custom avec champs) */}
+            {currentStepConfig.render?.(
+              getValues(),
+              () => {},
+              () => {}
             )}
-          </ScrollView>
 
-          {buttonPosition === 'bottom' && (
-            <View style={styles.buttonsContainerBottom}>
+            {currentStepConfig.fields?.map((field) => {
+              if (field.showWhen) {
+                const { field: watchedField, value: expectedValue } =
+                  field.showWhen;
+                if (watchedValues[watchedField] !== expectedValue) {
+                  return null; // cacher le champ
+                }
+              }
+
+              return (
+                <StepFormField
+                  key={field.name}
+                  field={field}
+                  control={control}
+                  error={errors[field.name]}
+                  defaultValue={defaultValues?.[field.name]}
+                  //formValues={watchedValues}
+                />
+              );
+            })}
+          </Animated.View>
+
+          {!isFixedPosition && (
+            <View style={styles.buttonsContainerInline}>
               <ButtonsRow {...buttonsRowProps} />
             </View>
           )}
+        </ScrollView>
 
-          {buttonPosition === 'bottom-raised' && (
-            <View style={styles.buttonsContainerBottomRaised}>
-              <ButtonsRow {...buttonsRowProps} />
-            </View>
-          )}
-        </View>
-      </KeyboardAvoidingView>
-    </PaperProvider>
+        {buttonPosition === 'bottom' && (
+          <View style={styles.buttonsContainerBottom}>
+            <ButtonsRow {...buttonsRowProps} />
+          </View>
+        )}
+
+        {buttonPosition === 'bottom-raised' && (
+          <View style={styles.buttonsContainerBottomRaised}>
+            <ButtonsRow {...buttonsRowProps} />
+          </View>
+        )}
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 

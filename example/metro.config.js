@@ -29,10 +29,6 @@ const extraNodeModules = {
     'node_modules/react-native-paper'
   ),
   'react-hook-form': path.resolve(projectRoot, 'node_modules/react-hook-form'),
-  'react-native-safe-area-context': path.resolve(
-    projectRoot,
-    'node_modules/react-native-safe-area-context'
-  ),
 };
 
 config.resolver.extraNodeModules = new Proxy(extraNodeModules, {

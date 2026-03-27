@@ -35,7 +35,7 @@ export type FormField = {
   label: string;
   type: FieldType;
   placeholder?: string;
-  defaultValue?: string;
+  defaultValue?: string | number | boolean | Date | any;
   maxLength?: number;
   validation?: ValidationRule;
   disabled?: boolean;
@@ -47,7 +47,8 @@ export type FormField = {
   showWhen?: {
     // condition pour afficher le champ nom de votre marie
     field: string;
-    value: any;
+    value?: any;
+    condition?: (value: any) => boolean | undefined;
   };
 };
 

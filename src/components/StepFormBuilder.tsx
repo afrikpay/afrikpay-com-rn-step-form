@@ -266,10 +266,19 @@ export default function StepFormBuilder({
 
             {currentStepConfig.fields?.map((field) => {
               if (field.showWhen) {
-                const { field: watchedField, value: expectedValue } =
-                  field.showWhen;
-                if (watchedValues[watchedField] !== expectedValue) {
-                  return null; // cacher le champ
+                const {
+                  field: watchedField,
+                  value: expectedValue,
+                  condition,
+                } = field.showWhen;
+
+                // On récupère la valeur actuelle ou une chaîne vide par défaut
+                const actualValue = watchedValues?.[watchedField];
+
+                if (condition) {
+                  if (!condition(actualValue)) return null;
+                } else if (actualValue !== expectedValue) {
+                  return null;
                 }
               }
 

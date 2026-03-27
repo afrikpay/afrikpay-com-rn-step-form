@@ -7,6 +7,7 @@ import {
   FlatList,
   Animated,
   Dimensions,
+  Platform,
 } from 'react-native';
 import {
   Checkbox,
@@ -14,16 +15,121 @@ import {
   Text,
   TextInput,
   RadioButton,
+  IconButton,
+  Switch,
 } from 'react-native-paper';
 import { Controller } from 'react-hook-form';
 import type { StepFormFieldProps } from '../types';
 import { MaterialIcons } from '@expo/vector-icons';
 // AJOUTÉ : Import pour la sélection de fichiers
-//import * as DocumentPicker from 'expo-document-picker';
+import * as DocumentPicker from 'expo-document-picker';
 
+import DateTimePicker from '@react-native-community/datetimepicker';
+//import type { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import type { DateTimePickerChangeEvent } from '@react-native-community/datetimepicker';
+
+// ── SwitchField (Composant interne pour le type switch) ──────────────────────────
+function SwitchField({
+  label,
+  value,
+  onChange,
+  disabled,
+}: {
+  label: string;
+  value: boolean;
+  onChange: (val: boolean) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <View style={switchStyles.container}>
+      <Text style={[switchStyles.label, disabled && switchStyles.disabled]}>
+        {label}
+      </Text>
+      <Switch
+        value={!!value}
+        onValueChange={onChange}
+        disabled={disabled}
+        color="#6200ee"
+      />
+    </View>
+  );
+}
+
+function DateField({
+  label,
+  value,
+  onChange,
+  error,
+  disabled,
+}: {
+  label: string;
+  value: any;
+  onChange: (val: Date) => void;
+  error?: boolean;
+  disabled?: boolean;
+}) {
+  const [show, setShow] = useState(false);
+  const dateValue = value instanceof Date ? value : new Date();
+
+  const formatDate = (date: any) => {
+    if (!date || !(date instanceof Date)) return 'Sélectionner une date';
+    return date.toLocaleDateString('fr-FR');
+  };
+
+  // Bon type : DateTimePickerChangeEvent
+  const handleValueChange = (
+    _event: DateTimePickerChangeEvent,
+    selectedDate?: Date
+  ) => {
+    if (Platform.OS === 'android') setShow(false);
+    if (selectedDate) onChange(selectedDate);
+  };
+
+  return (
+    <View style={dateStyles.container}>
+      <TouchableOpacity
+        onPress={() => !disabled && setShow(true)}
+        activeOpacity={0.7}
+      >
+        <View
+          style={[
+            dateStyles.trigger,
+            error ? dateStyles.triggerError : dateStyles.triggerDefault,
+            disabled && dateStyles.disabled,
+          ]}
+        >
+          <Text style={[dateStyles.label, error && dateStyles.labelError]}>
+            {label}
+          </Text>
+          <View style={dateStyles.row}>
+            <Text style={[dateStyles.value, !value && dateStyles.placeholder]}>
+              {formatDate(value)}
+            </Text>
+            <MaterialIcons
+              name="event"
+              size={22}
+              color={disabled ? '#ccc' : '#6200ee'}
+            />
+          </View>
+        </View>
+      </TouchableOpacity>
+
+      {show && (
+        <DateTimePicker
+          value={dateValue}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onValueChange={handleValueChange}
+          onDismiss={() => setShow(false)}
+          maximumDate={new Date()}
+        />
+      )}
+    </View>
+  );
+}
 // ── FileField (Composant interne pour le type file) ───────────────────────────────
 // AJOUTÉ : Nouveau composant pour gérer la sélection de documents
-/*function FileField({
+function FileField({
   label,
   value,
   onChange,
@@ -39,7 +145,14 @@ import { MaterialIcons } from '@expo/vector-icons';
   const handlePickDocument = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: '*
+        // On liste les types autorisés (Images, PDF, Docs, etc.)
+        type: [
+          'image/*', // Toutes les images
+          'application/pdf', // PDF
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // Word
+          'text/plain', // Fichiers texte
+        ],
         copyToCacheDirectory: true,
       });
 
@@ -47,43 +160,55 @@ import { MaterialIcons } from '@expo/vector-icons';
         onChange(result.assets[0]);
       }
     } catch (err) {
-      console.error("Erreur lors de la sélection du fichier:", err);
+      console.error('Erreur lors de la sélection du fichier:', err);
     }
   };
 
   return (
     <View style={fileStyles.container}>
-      <Text style={[fileStyles.label, error && fileStyles.labelError]}>{label}</Text>
-      
-      <View style={[
-        fileStyles.dropZone,
-        error ? fileStyles.dropZoneError : fileStyles.dropZoneDefault,
-        disabled && fileStyles.disabled
-      ]}>
+      <Text style={[fileStyles.label, error && fileStyles.labelError]}>
+        {label}
+      </Text>
+
+      <View
+        style={[
+          fileStyles.dropZone,
+          error ? fileStyles.dropZoneError : fileStyles.dropZoneDefault,
+          disabled && fileStyles.disabled,
+        ]}
+      >
         {!value ? (
-          <TouchableOpacity 
-            style={fileStyles.innerBtn} 
+          <TouchableOpacity
+            style={fileStyles.innerBtn}
             onPress={handlePickDocument}
             disabled={disabled}
           >
-            <MaterialIcons name="cloud-upload" size={28} color={disabled ? "#ccc" : "#6200ee"} />
-            <Text style={fileStyles.placeholder}>Cliquez pour choisir un fichier</Text>
+            <MaterialIcons
+              name="cloud-upload"
+              size={28}
+              color={disabled ? '#ccc' : '#6200ee'}
+            />
+            <Text style={fileStyles.placeholder}>
+              Cliquez pour choisir un fichier
+            </Text>
           </TouchableOpacity>
         ) : (
           <View style={fileStyles.fileInfoRow}>
             <MaterialIcons name="insert-drive-file" size={24} color="#6200ee" />
             <View style={fileStyles.textContainer}>
-              <Text numberOfLines={1} style={fileStyles.fileName}>{value.name}</Text>
+              <Text numberOfLines={1} style={fileStyles.fileName}>
+                {value.name}
+              </Text>
               {value.size && (
                 <Text style={fileStyles.fileSize}>
                   {(value.size / 1024 / 1024).toFixed(2)} MB
                 </Text>
               )}
             </View>
-            <IconButton 
-              icon="close" 
-              size={20} 
-              onPress={() => onChange(null)} 
+            <IconButton
+              icon="close"
+              size={20}
+              onPress={() => onChange(null)}
               disabled={disabled}
             />
           </View>
@@ -91,7 +216,9 @@ import { MaterialIcons } from '@expo/vector-icons';
       </View>
     </View>
   );
-}*/
+}
+
+// fin
 
 // ── RadioField (Composant interne pour le type radio) ───────────────────────────────
 // AJOUTÉ : Nouveau composant pour gérer l'affichage des boutons radio
@@ -390,18 +517,40 @@ export function StepFormField({
                   onChange={onChange}
                   disabled={disabled}
                 />
+              ) : type === 'switch' ? (
+                <SwitchField
+                  label={label}
+                  value={value}
+                  onChange={onChange}
+                  disabled={disabled}
+                />
+              ) : type === 'file' ? (
+                // AJOUTÉ : Intégration du type file dans le switch de rendu
+                <FileField
+                  label={label}
+                  value={value}
+                  onChange={onChange}
+                  error={!!error}
+                  disabled={disabled}
+                />
+              ) : type === 'date' ? (
+                // AJOUTÉ : Type Date
+                <DateField
+                  label={label}
+                  value={value}
+                  onChange={onChange}
+                  error={!!error}
+                  disabled={disabled}
+                />
               ) : (
                 <TextInput
-                  //label={label}
-                  // AJOUTÉ : Affichage du compteur si une limite existe
                   label={
                     limit
                       ? `${label} (${(value ?? '').length}/${limit})`
                       : label
                   }
                   onBlur={onBlur}
-                  //onChangeText={onChange}
-                  onChangeText={handleTextChange} // MODIFIÉ
+                  onChangeText={handleTextChange}
                   value={value}
                   error={!!error}
                   disabled={disabled}
@@ -412,14 +561,15 @@ export function StepFormField({
                   autoCapitalize={type === 'email' ? 'none' : 'sentences'}
                   autoComplete={type === 'email' ? 'email' : 'off'}
                   autoCorrect={false}
-                  maxLength={limit} // securiter
+                  maxLength={limit}
+                  // LOGIQUE MULTILINE AJOUTÉE ICI
+                  multiline={type === 'multiline'}
+                  numberOfLines={type === 'multiline' ? 4 : 1}
                   left={LeftIcon?.()}
                   right={
                     isSecureField ? (
                       <TextInput.Icon
-                        //icon={() => inputProps?.right}
-                        //onPress={() => setSecureTextVisible((p) => !p)}
-                        icon={secureTextVisible ? 'eye-off' : 'eye'} // MODIFIÉ pour icône dynamique
+                        icon={secureTextVisible ? 'eye-off' : 'eye'}
                         onPress={() => setSecureTextVisible((p) => !p)}
                         forceTextInputFocus={false}
                       />
@@ -427,7 +577,11 @@ export function StepFormField({
                       RightIcon?.()
                     )
                   }
-                  style={styles.input}
+                  // Style dynamique pour le multiline
+                  style={[
+                    styles.input,
+                    type === 'multiline' && styles.inputMultiline,
+                  ]}
                   theme={{ roundness: 8 }}
                   {...inputProps}
                 />
@@ -450,6 +604,10 @@ const styles = StyleSheet.create({
   container: { marginBottom: 16 },
   checkboxContainer: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   input: { backgroundColor: 'transparent' },
+  inputMultiline: {
+    minHeight: 100,
+    textAlignVertical: 'top', // Pour que le texte commence en haut sur Android
+  },
 });
 
 const sheetStyles = StyleSheet.create({
@@ -548,9 +706,15 @@ const radioStyles = StyleSheet.create({
 
 // AJOUTÉ : Styles pour le composant FileField
 // AJOUTÉ : Styles pour le composant FileField
-/*const fileStyles = StyleSheet.create({
+const fileStyles = StyleSheet.create({
   container: { marginBottom: 8 },
-  label: { fontSize: 12, color: '#6200ee', marginBottom: 4, fontWeight: '500', marginLeft: 4 },
+  label: {
+    fontSize: 12,
+    color: '#6200ee',
+    marginBottom: 4,
+    fontWeight: '500',
+    marginLeft: 4,
+  },
   labelError: { color: '#B00020' },
   dropZone: {
     borderWidth: 1.5,
@@ -562,11 +726,65 @@ const radioStyles = StyleSheet.create({
   },
   dropZoneDefault: { borderColor: '#9E9E9E' },
   dropZoneError: { borderColor: '#B00020', backgroundColor: '#fff8f8' },
-  innerBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 12 },
+  innerBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+  },
   placeholder: { marginLeft: 10, color: '#757575', fontSize: 14 },
-  fileInfoRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 },
+  fileInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+  },
   textContainer: { flex: 1, marginLeft: 12 },
   fileName: { fontSize: 14, color: '#212121', fontWeight: '500' },
   fileSize: { fontSize: 11, color: '#757575' },
   disabled: { opacity: 0.5 },
-});*/
+});
+
+// pour la date
+const dateStyles = StyleSheet.create({
+  container: { marginBottom: 8 },
+  trigger: {
+    borderWidth: 1.5,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    minHeight: 56,
+    justifyContent: 'center',
+  },
+  triggerDefault: { borderColor: '#9E9E9E' },
+  triggerError: { borderColor: '#B00020' },
+  label: { fontSize: 12, color: '#6200ee', fontWeight: '500', marginBottom: 2 },
+  labelError: { color: '#B00020' },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  value: { fontSize: 16, color: '#212121' },
+  placeholder: { color: '#9E9E9E' },
+  disabled: { opacity: 0.5 },
+});
+
+// Pour les MultyLine
+const switchStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', // Aligne le label à gauche et le switch à droite
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    marginBottom: 8,
+  },
+  label: {
+    fontSize: 16,
+    color: '#212121',
+    flex: 1, // Permet au texte de prendre l'espace restant
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+});

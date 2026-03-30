@@ -122,7 +122,9 @@ export default function App() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.container}>
-            <Text variant="titleLarge">Step Form Paiement</Text>
+            <Text style={styles.titlePrincipal} variant="titleLarge">
+              Step Form
+            </Text>
 
             <StepFormBuilder
               onSubmit={console.log}
@@ -653,6 +655,13 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  titlePrincipal: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    //marginTop: 50,
   },
   containerKeyboard: {
     flex: 1,

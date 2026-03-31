@@ -1,7 +1,7 @@
 {
   "name": "@afrikpay/rn-step-form",
-  "version": "0.2.0",
-  "description": "A react native step form",
+  "version": "2.0.0",
+  "description": "Declarative multi-step form builder for React Native — NativeWind, RHF, Zod",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",
   "react-native": "./lib/module/index.js",
@@ -59,7 +59,7 @@
   },
   "homepage": "https://github.com/afrikpay/afrikpay-com-rn-step-form.git#readme",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://europe-west4-npm.pkg.dev/prod-app-base-060623/afrikpay-npm/"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^19.6.0",
@@ -97,12 +97,19 @@
     "typescript": "^5.2.2"
   },
   "peerDependencies": {
-    "@expo/vector-icons": "*",
-    "react": "*",
-    "react-hook-form": "*",
-    "react-native": "*",
-    "react-native-paper": "*",
-    "react-native-reanimated": "*"
+    "react": ">=18",
+    "react-native": ">=0.73",
+    "react-hook-form": ">=7.50",
+    "react-native-reanimated": ">=3",
+    "nativewind": ">=4",
+    "@gorhom/bottom-sheet": ">=5",
+    "lucide-react-native": ">=0.300",
+    "@react-native-community/datetimepicker": ">=7",
+    "expo-document-picker": ">=14"
+  },
+  "peerDependenciesMeta": {
+    "zod": { "optional": true },
+    "@hookform/resolvers": { "optional": true }
   },
   "workspaces": [
     "example"

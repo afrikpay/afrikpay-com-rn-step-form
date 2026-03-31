@@ -1,4 +1,4 @@
-export { default as StepFormBuilder } from './components/StepFormBuilder'
+export { default as StepFormBuilder } from './components/StepFormBuilder';
 export type {
   FormField,
   FormStep,
@@ -6,4 +6,4 @@ export type {
   FieldType,
   StepFormBuilderProps,
   ValidationRule,
-} from './types'
+} from './types';

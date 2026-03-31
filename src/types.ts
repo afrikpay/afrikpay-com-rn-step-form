@@ -4,15 +4,15 @@ import type {
   FieldErrorsImpl,
   Merge,
   RegisterOptions,
-} from 'react-hook-form'
-import type { LucideIcon } from 'lucide-react-native'
+} from 'react-hook-form';
+import type { LucideIcon } from 'lucide-react-native';
 
 export type ValidationRule =
   | Omit<
       RegisterOptions<any, string>,
       'disabled' | 'valueAsNumber' | 'valueAsDate' | 'setValueAs'
     >
-  | undefined
+  | undefined;
 
 export type FieldType =
   | 'text'
@@ -26,64 +26,64 @@ export type FieldType =
   | 'radio'
   | 'switch'
   | 'checkbox'
-  | 'file'
+  | 'file';
 
 export type FormField = {
-  name: string
-  label: string
-  type: FieldType
-  placeholder?: string
-  defaultValue?: string | number | boolean | Date
-  maxLength?: number
-  validation?: ValidationRule
-  disabled?: boolean
-  leftIcon?: LucideIcon
-  rightIcon?: LucideIcon
-  options?: Array<{ label: string; value: string }>
+  name: string;
+  label: string;
+  type: FieldType;
+  placeholder?: string;
+  defaultValue?: string | number | boolean | Date;
+  maxLength?: number;
+  validation?: ValidationRule;
+  disabled?: boolean;
+  leftIcon?: LucideIcon;
+  rightIcon?: LucideIcon;
+  options?: Array<{ label: string; value: string }>;
   showWhen?: {
-    field: string
-    value?: any
-    condition?: (value: any) => boolean
-  }
-  editable?: (formValues: Record<string, any>) => boolean
-}
+    field: string;
+    value?: any;
+    condition?: (value: any) => boolean;
+  };
+  editable?: (formValues: Record<string, any>) => boolean;
+};
 
 export type FormStep = {
-  title?: string
-  description?: string
-  fields: FormField[]
-  type?: 'custom'
-  header?: (data?: Record<string, any>) => React.ReactNode
+  title?: string;
+  description?: string;
+  fields: FormField[];
+  type?: 'custom';
+  header?: (data?: Record<string, any>) => React.ReactNode;
   render?: (
     data: FormData,
     goToNext: () => void,
     goToPrev: () => void
-  ) => React.ReactNode
-  onStepComplete?: (data: FormData) => Promise<FormData | void>
-  isNextDisabled?: boolean | ((values: FormData) => boolean)
-  buttonPosition?: 'center' | 'bottom' | 'bottom-raised'
-}
+  ) => React.ReactNode;
+  onStepComplete?: (data: FormData) => Promise<FormData | void>;
+  isNextDisabled?: boolean | ((values: FormData) => boolean);
+  buttonPosition?: 'center' | 'bottom' | 'bottom-raised';
+};
 
-export type FormData = Record<string, any>
+export type FormData = Record<string, any>;
 
 export type StepFormBuilderProps = {
-  steps: FormStep[]
-  onSubmit: (data: FormData) => void | Promise<void>
-  onError?: (errors: Record<string, any>) => void
-  defaultValues?: FormData
-  externalValues?: FormData
-  onExternalValueChange?: (name: string, value: any) => void
-  resolver?: any
-  nextLabel?: string
-  backLabel?: string
-  submitLabel?: string
-  testID?: string
-}
+  steps: FormStep[];
+  onSubmit: (data: FormData) => void | Promise<void>;
+  onError?: (errors: Record<string, any>) => void;
+  defaultValues?: FormData;
+  externalValues?: FormData;
+  onExternalValueChange?: (name: string, value: any) => void;
+  resolver?: any;
+  nextLabel?: string;
+  backLabel?: string;
+  submitLabel?: string;
+  testID?: string;
+};
 
 export type StepFormFieldProps = {
-  field: FormField
-  control: Control<any>
-  error?: FieldError | Merge<FieldError, FieldErrorsImpl<FormData>>
-  defaultValue?: any
-  formValues?: FormData
-}
+  field: FormField;
+  control: Control<any>;
+  error?: FieldError | Merge<FieldError, FieldErrorsImpl<FormData>>;
+  defaultValue?: any;
+  formValues?: FormData;
+};

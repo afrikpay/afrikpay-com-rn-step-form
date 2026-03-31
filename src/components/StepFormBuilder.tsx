@@ -1,29 +1,31 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
   Pressable,
   ActivityIndicator,
-} from 'react-native'
-import { useForm } from 'react-hook-form'
-import { StepFormField } from './StepFormField'
-import { StepFormProgress } from './StepFormProgress'
-import { StepFormHeader } from './StepFormHeader'
+  StyleSheet,
+} from 'react-native';
+import { useForm } from 'react-hook-form';
+import { StepFormField } from './StepFormField';
+import { StepFormProgress } from './StepFormProgress';
+import { StepFormHeader } from './StepFormHeader';
 import Animated, {
   FadeIn,
   FadeOut,
   SlideInRight,
   SlideOutLeft,
-} from 'react-native-reanimated'
-import type { FormData, FormField, StepFormBuilderProps } from '../types'
+} from 'react-native-reanimated';
+import type { FormData, FormField, StepFormBuilderProps } from '../types';
+import { colors } from '../tokens';
 
 function isFieldVisible(field: FormField, values: FormData): boolean {
-  if (!field.showWhen) return true
-  const { field: watchField, value, condition } = field.showWhen
-  const watchValue = values[watchField]
-  if (condition) return condition(watchValue)
-  return watchValue === value
+  if (!field.showWhen) return true;
+  const { field: watchField, value, condition } = field.showWhen;
+  const watchValue = values[watchField];
+  if (condition) return condition(watchValue);
+  return watchValue === value;
 }
 
 export default function StepFormBuilder({
@@ -39,10 +41,10 @@ export default function StepFormBuilder({
   submitLabel = 'Valider',
   testID = 'step-form',
 }: StepFormBuilderProps) {
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [currentStep, setCurrentStep] = useState(0)
-  const isLastStep = currentStep === steps.length - 1
-  const step = steps[currentStep]
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const isLastStep = currentStep === steps.length - 1;
+  const step = steps[currentStep];
 
   const {
     control,
@@ -55,113 +57,95 @@ export default function StepFormBuilder({
   } = useForm<FormData>({
     defaultValues,
     ...(resolver ? { resolver } : {}),
-  })
+  });
 
-  const formValues = watch()
+  const formValues = watch();
 
   useEffect(() => {
     if (externalValues) {
-      Object.entries(externalValues).forEach(([name, value]) => {
-        setValue(name, value)
-        onExternalValueChange?.(name, value)
-      })
+      Object.entries(externalValues).forEach(([n, v]) => {
+        setValue(n, v);
+        onExternalValueChange?.(n, v);
+      });
     }
-  }, [externalValues, setValue, onExternalValueChange])
+  }, [externalValues, setValue, onExternalValueChange]);
 
   const visibleFields = useMemo(
     () => (step?.fields ?? []).filter((f) => isFieldVisible(f, formValues)),
     [step?.fields, formValues]
-  )
+  );
 
   const isNextDisabled = useMemo(() => {
-    if (!step?.isNextDisabled) return false
+    if (!step?.isNextDisabled) return false;
     if (typeof step.isNextDisabled === 'function')
-      return step.isNextDisabled(formValues)
-    return step.isNextDisabled
-  }, [step?.isNextDisabled, formValues])
+      return step.isNextDisabled(formValues);
+    return step.isNextDisabled;
+  }, [step, formValues]);
 
   const goToNext = useCallback(() => {
-    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))
-  }, [steps.length])
+    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+  }, [steps.length]);
 
   const goToPrev = useCallback(() => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0))
-  }, [])
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
+  }, []);
 
   const handleNext = async () => {
-    const fieldNames = visibleFields.map((f) => f.name)
-    const isValid = await trigger(fieldNames)
-    if (!isValid) return
+    const fieldNames = visibleFields.map((f) => f.name);
+    const isValid = await trigger(fieldNames);
+    if (!isValid) return;
 
-    const data = getValues()
-
+    const data = getValues();
     if (step?.onStepComplete) {
-      setIsProcessing(true)
+      setIsProcessing(true);
       try {
-        const result = await step.onStepComplete(data)
+        const result = await step.onStepComplete(data);
         if (result) {
-          Object.entries(result).forEach(([key, value]) => {
-            setValue(key, value)
-          })
+          Object.entries(result).forEach(([key, val]) => setValue(key, val));
         }
-      } catch (error: unknown) {
-        const msg =
-          error instanceof Error ? error.message : 'Unknown error'
-        onError?.({ stepError: msg })
-        return
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        onError?.({ stepError: msg });
+        return;
       } finally {
-        setIsProcessing(false)
+        setIsProcessing(false);
       }
     }
-
-    goToNext()
-  }
+    goToNext();
+  };
 
   const handleFormSubmit = async (data: FormData) => {
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
-      await onSubmit(data)
+      await onSubmit(data);
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
+  };
 
-  const handleFormError = (error: Record<string, any>) => {
-    onError?.(error)
-  }
+  const handleFormError = (err: Record<string, any>) => {
+    onError?.(err);
+  };
 
-  const renderCustomStep = () => {
-    if (!step?.render) return null
-    return (
-      <>
-        {step.render(getValues(), goToNext, goToPrev)}
-        {visibleFields.length > 0 &&
-          visibleFields.map((field) => (
-            <StepFormField
-              key={field.name}
-              field={field}
-              control={control}
-              error={errors[field.name]}
-              defaultValue={defaultValues?.[field.name]}
-              formValues={formValues}
-            />
-          ))}
-      </>
-    )
-  }
+  const renderFields = () =>
+    visibleFields.map((field) => (
+      <StepFormField
+        key={field.name}
+        field={field}
+        control={control}
+        error={errors[field.name]}
+        defaultValue={defaultValues?.[field.name]}
+        formValues={formValues}
+      />
+    ));
 
-  const buttonPositionClass =
-    step?.buttonPosition === 'center'
-      ? 'items-center'
-      : step?.buttonPosition === 'bottom-raised'
-        ? 'mb-8'
-        : ''
+  const btnDisabled = isProcessing || isNextDisabled;
 
   return (
-    <View testID={testID} className="flex-1 bg-white px-6 pt-6">
+    <View testID={testID} style={b.root}>
       <ScrollView
-        className="flex-1"
-        contentContainerClassName="flex-grow"
+        style={b.scroll}
+        contentContainerStyle={b.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -181,26 +165,24 @@ export default function StepFormBuilder({
           entering={SlideInRight.duration(250)}
           exiting={SlideOutLeft.duration(200)}
           key={currentStep}
-          className="flex-1 mt-4"
+          style={b.fieldsWrap}
         >
-          {step?.type === 'custom' ? (
-            renderCustomStep()
+          {step?.type === 'custom' && step.render ? (
+            <>
+              {step.render(getValues(), goToNext, goToPrev)}
+              {visibleFields.length > 0 && renderFields()}
+            </>
           ) : (
-            visibleFields.map((field) => (
-              <StepFormField
-                key={field.name}
-                field={field}
-                control={control}
-                error={errors[field.name]}
-                defaultValue={defaultValues?.[field.name]}
-                formValues={formValues}
-              />
-            ))
+            renderFields()
           )}
         </Animated.View>
 
         <Animated.View
-          className={`flex-row gap-3 mt-6 mb-10 ${buttonPositionClass}`}
+          style={[
+            b.buttonsRow,
+            step?.buttonPosition === 'center' && b.buttonsCenter,
+            step?.buttonPosition === 'bottom-raised' && b.buttonsRaised,
+          ]}
           entering={FadeIn}
           exiting={FadeOut}
         >
@@ -209,11 +191,9 @@ export default function StepFormBuilder({
               testID={`${testID}-back`}
               onPress={goToPrev}
               disabled={isProcessing}
-              className="flex-1 items-center justify-center py-3.5 rounded-lg border border-neutral-300"
+              style={b.backBtn}
             >
-              <Text className="text-base font-medium text-neutral-700">
-                {backLabel}
-              </Text>
+              <Text style={b.backText}>{backLabel}</Text>
             </Pressable>
           )}
           <Pressable
@@ -223,23 +203,16 @@ export default function StepFormBuilder({
                 ? handleSubmit(handleFormSubmit, handleFormError)
                 : handleNext
             }
-            disabled={isProcessing || isNextDisabled}
-            className={`flex-1 items-center justify-center py-3.5 rounded-lg ${
-              isProcessing || isNextDisabled
-                ? 'bg-neutral-200'
-                : 'bg-primary-700'
-            }`}
+            disabled={btnDisabled}
+            style={[
+              b.nextBtn,
+              btnDisabled ? b.nextBtnDisabled : b.nextBtnActive,
+            ]}
           >
             {isProcessing ? (
-              <ActivityIndicator color="#fff" size="small" />
+              <ActivityIndicator color={colors.white} size="small" />
             ) : (
-              <Text
-                className={`text-base font-semibold ${
-                  isProcessing || isNextDisabled
-                    ? 'text-neutral-400'
-                    : 'text-white'
-                }`}
-              >
+              <Text style={[b.nextText, btnDisabled && b.nextTextDisabled]}>
                 {isLastStep ? submitLabel : nextLabel}
               </Text>
             )}
@@ -247,5 +220,46 @@ export default function StepFormBuilder({
         </Animated.View>
       </ScrollView>
     </View>
-  )
+  );
 }
+
+const b = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: colors.white,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+  },
+  scroll: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
+  fieldsWrap: { flex: 1, marginTop: 16 },
+  buttonsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 24,
+    marginBottom: 40,
+  },
+  buttonsCenter: { alignItems: 'center' },
+  buttonsRaised: { marginBottom: 32 },
+  backBtn: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.neutral300,
+  },
+  backText: { fontSize: 16, fontWeight: '500', color: colors.neutral700 },
+  nextBtn: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 8,
+  },
+  nextBtnActive: { backgroundColor: colors.primary700 },
+  nextBtnDisabled: { backgroundColor: colors.neutral200 },
+  nextText: { fontSize: 16, fontWeight: '600', color: colors.white },
+  nextTextDisabled: { color: colors.neutral400 },
+});

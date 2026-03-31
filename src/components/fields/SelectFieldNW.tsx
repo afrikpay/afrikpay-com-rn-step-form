@@ -1,20 +1,21 @@
-import { useCallback, useMemo, useRef } from 'react'
-import { View, Text, Pressable } from 'react-native'
-import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet'
-import { ChevronDown, Check } from 'lucide-react-native'
+import { useCallback, useMemo, useRef } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { ChevronDown, Check } from 'lucide-react-native';
+import { colors } from '../../tokens';
 
-type SelectOption = { label: string; value: string }
+type SelectOption = { label: string; value: string };
 
 type SelectFieldNWProps = {
-  label: string
-  options: SelectOption[]
-  value?: string
-  onChange: (value: string) => void
-  placeholder?: string
-  error?: string
-  disabled?: boolean
-  testID?: string
-}
+  label: string;
+  options: SelectOption[];
+  value?: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  error?: string;
+  disabled?: boolean;
+  testID?: string;
+};
 
 export function SelectFieldNW({
   label,
@@ -26,68 +27,58 @@ export function SelectFieldNW({
   disabled = false,
   testID,
 }: SelectFieldNWProps) {
-  const bottomSheetRef = useRef<BottomSheet>(null)
-  const snapPoints = useMemo(() => ['50%'], [])
-  const selectedOption = options.find((opt) => opt.value === value)
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['50%'], []);
+  const selectedOption = options.find((opt) => opt.value === value);
 
   const handleOpen = useCallback(() => {
-    if (!disabled) bottomSheetRef.current?.expand()
-  }, [disabled])
+    if (!disabled) bottomSheetRef.current?.expand();
+  }, [disabled]);
 
   const handleSelect = useCallback(
     (optionValue: string) => {
-      onChange(optionValue)
-      bottomSheetRef.current?.close()
+      onChange(optionValue);
+      bottomSheetRef.current?.close();
     },
     [onChange]
-  )
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: SelectOption }) => (
       <Pressable
         testID={`${testID}-option-${item.value}`}
-        className={`flex-row items-center justify-between px-4 py-3 min-h-[44px] ${
-          item.value === value ? 'bg-primary-50' : ''
-        }`}
+        style={[s.optionRow, item.value === value && s.optionSelected]}
         onPress={() => handleSelect(item.value)}
       >
         <Text
-          className={`text-base ${
-            item.value === value
-              ? 'text-primary-700 font-medium'
-              : 'text-neutral-900'
-          }`}
+          style={[s.optionText, item.value === value && s.optionTextSelected]}
         >
           {item.label}
         </Text>
-        {item.value === value && <Check size={20} color="#1D4ED8" />}
+        {item.value === value && <Check size={20} color={colors.primary700} />}
       </Pressable>
     ),
     [value, handleSelect, testID]
-  )
+  );
 
   return (
     <View testID={testID}>
-      <Text className="mb-2 text-sm font-medium text-neutral-700">{label}</Text>
+      <Text style={s.label}>{label}</Text>
       <Pressable
         testID={`${testID}-trigger`}
         onPress={handleOpen}
-        className={`flex-row items-center justify-between px-4 py-3 bg-white border rounded-lg min-h-[44px] ${
-          error ? 'border-error-500' : 'border-neutral-300'
-        } ${disabled ? 'bg-neutral-100' : ''}`}
+        style={[
+          s.trigger,
+          error ? s.borderError : s.borderDefault,
+          disabled && s.bgDisabled,
+        ]}
       >
-        <Text
-          className={`text-base ${
-            selectedOption ? 'text-neutral-900' : 'text-neutral-400'
-          }`}
-        >
+        <Text style={[s.valueText, !selectedOption && s.placeholderText]}>
           {selectedOption?.label || placeholder}
         </Text>
-        <ChevronDown size={20} color="#A3A3A3" />
+        <ChevronDown size={20} color={colors.neutral400} />
       </Pressable>
-      {error && (
-        <Text className="mt-1 text-sm text-error-500">{error}</Text>
-      )}
+      {error && <Text style={s.errorText}>{error}</Text>}
 
       <BottomSheet
         ref={bottomSheetRef}
@@ -103,5 +94,42 @@ export function SelectFieldNW({
         />
       </BottomSheet>
     </View>
-  )
+  );
 }
+
+const s = StyleSheet.create({
+  label: {
+    marginBottom: 8,
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.neutral700,
+  },
+  trigger: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderRadius: 8,
+    minHeight: 44,
+  },
+  borderDefault: { borderColor: colors.neutral300 },
+  borderError: { borderColor: colors.error500 },
+  bgDisabled: { backgroundColor: colors.neutral100 },
+  valueText: { fontSize: 16, color: colors.neutral900 },
+  placeholderText: { color: colors.neutral400 },
+  errorText: { marginTop: 4, fontSize: 14, color: colors.error500 },
+  optionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minHeight: 44,
+  },
+  optionSelected: { backgroundColor: colors.primary50 },
+  optionText: { fontSize: 16, color: colors.neutral900 },
+  optionTextSelected: { color: colors.primary700, fontWeight: '500' },
+});

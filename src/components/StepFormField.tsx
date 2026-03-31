@@ -1,11 +1,19 @@
-import { useState } from 'react'
-import { View, Text, TextInput, Pressable, Switch } from 'react-native'
-import { Controller } from 'react-hook-form'
-import { Eye, EyeOff, Check, ChevronDown, Upload, X } from 'lucide-react-native'
-import type { StepFormFieldProps } from '../types'
-import { DateFieldNW } from './fields/DateFieldNW'
-import { SelectFieldNW } from './fields/SelectFieldNW'
-import { FileFieldNW } from './fields/FileFieldNW'
+import { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  Switch,
+  StyleSheet,
+} from 'react-native';
+import { Controller } from 'react-hook-form';
+import { Eye, EyeOff, Check } from 'lucide-react-native';
+import type { StepFormFieldProps } from '../types';
+import { colors } from '../tokens';
+import { DateFieldNW } from './fields/DateFieldNW';
+import { SelectFieldNW } from './fields/SelectFieldNW';
+import { FileFieldNW } from './fields/FileFieldNW';
 
 export function StepFormField({
   field,
@@ -14,8 +22,8 @@ export function StepFormField({
   defaultValue,
   formValues,
 }: StepFormFieldProps) {
-  const [secureTextVisible, setSecureTextVisible] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
+  const [secureTextVisible, setSecureTextVisible] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const {
     name,
@@ -29,51 +37,47 @@ export function StepFormField({
     rightIcon: RightIcon,
     options,
     editable: editableFn,
-  } = field
+  } = field;
 
-  const isEditable = editableFn ? editableFn(formValues ?? {}) : !disabled
+  const isEditable = editableFn ? editableFn(formValues ?? {}) : !disabled;
 
   const getKeyboardType = () => {
     switch (type) {
       case 'email':
-        return 'email-address' as const
+        return 'email-address' as const;
       case 'phone':
-        return 'phone-pad' as const
+        return 'phone-pad' as const;
       case 'number':
-        return 'numeric' as const
+        return 'numeric' as const;
       default:
-        return 'default' as const
+        return 'default' as const;
     }
-  }
+  };
 
-  const isSecureField = type === 'password'
-  const isMultiline = type === 'multiline'
-  const testID = `step-form-field-${name}`
-
-  const borderClass = error
-    ? 'border-error-500'
-    : isFocused
-      ? 'border-primary-500'
-      : 'border-neutral-300'
+  const isSecureField = type === 'password';
+  const isMultiline = type === 'multiline';
+  const testID = `step-form-field-${name}`;
 
   const renderLabel = (currentLength?: number) => (
-    <Text className="mb-2 text-sm font-medium text-neutral-700">
+    <Text style={f.label}>
       {label}
-      {maxLength && currentLength !== undefined && (
-        <Text className="text-neutral-400"> ({currentLength}/{maxLength})</Text>
+      {maxLength != null && currentLength !== undefined && (
+        <Text style={f.counter}>
+          {' '}
+          ({currentLength}/{maxLength})
+        </Text>
       )}
     </Text>
-  )
+  );
 
   return (
-    <View className="mb-4" testID={testID}>
+    <View style={f.container} testID={testID}>
       <Controller
         control={control}
         name={name}
         rules={validation}
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value } }) => {
-          // Date field
           if (type === 'date') {
             return (
               <DateFieldNW
@@ -85,10 +89,8 @@ export function StepFormField({
                 leftIcon={LeftIcon}
                 testID={testID}
               />
-            )
+            );
           }
-
-          // Select field
           if (type === 'select') {
             return (
               <SelectFieldNW
@@ -101,10 +103,8 @@ export function StepFormField({
                 disabled={!isEditable}
                 testID={testID}
               />
-            )
+            );
           }
-
-          // File field
           if (type === 'file') {
             return (
               <FileFieldNW
@@ -115,107 +115,92 @@ export function StepFormField({
                 disabled={!isEditable}
                 testID={testID}
               />
-            )
+            );
           }
 
-          // Radio field
+          // Radio
           if (type === 'radio') {
             return (
               <View>
                 {renderLabel()}
-                <View className="gap-2">
-                  {(options ?? []).map((opt) => (
-                    <Pressable
-                      key={opt.value}
-                      testID={`${testID}-radio-${opt.value}`}
-                      onPress={() => onChange(opt.value)}
-                      className={`flex-row items-center p-3 rounded-lg border min-h-[44px] ${
-                        value === opt.value
-                          ? 'border-primary-700 bg-primary-50'
-                          : 'border-neutral-200'
-                      }`}
+                {(options ?? []).map((opt) => (
+                  <Pressable
+                    key={opt.value}
+                    testID={`${testID}-radio-${opt.value}`}
+                    onPress={() => onChange(opt.value)}
+                    style={[
+                      f.radioRow,
+                      value === opt.value ? f.radioSelected : f.radioDefault,
+                    ]}
+                  >
+                    <View
+                      style={[
+                        f.radioDot,
+                        value === opt.value ? f.radioDotOn : f.radioDotOff,
+                      ]}
                     >
-                      <View
-                        className={`w-5 h-5 rounded-full border-2 items-center justify-center mr-3 ${
-                          value === opt.value
-                            ? 'border-primary-700 bg-primary-700'
-                            : 'border-neutral-300'
-                        }`}
-                      >
-                        {value === opt.value && (
-                          <View className="w-2 h-2 rounded-full bg-white" />
-                        )}
-                      </View>
-                      <Text className="text-base text-neutral-900">
-                        {opt.label}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
+                      {value === opt.value && <View style={f.radioDotInner} />}
+                    </View>
+                    <Text style={f.radioLabel}>{opt.label}</Text>
+                  </Pressable>
+                ))}
                 {error && (
-                  <Text className="mt-1 text-sm text-error-500">
-                    {error.message?.toString()}
-                  </Text>
+                  <Text style={f.errorText}>{error.message?.toString()}</Text>
                 )}
               </View>
-            )
+            );
           }
 
-          // Switch field
+          // Switch
           if (type === 'switch') {
             return (
               <Pressable
                 testID={`${testID}-switch`}
                 onPress={() => onChange(!value)}
-                className="flex-row items-center justify-between py-3"
+                style={f.switchRow}
               >
-                <Text className="text-base text-neutral-900 flex-1">
-                  {label}
-                </Text>
+                <Text style={f.switchLabel}>{label}</Text>
                 <Switch
                   value={!!value}
                   onValueChange={onChange}
-                  trackColor={{ false: '#E5E5E5', true: '#1D4ED8' }}
-                  thumbColor="#FFFFFF"
+                  trackColor={{
+                    false: colors.neutral200,
+                    true: colors.primary700,
+                  }}
+                  thumbColor={colors.white}
                 />
               </Pressable>
-            )
+            );
           }
 
-          // Checkbox field
+          // Checkbox
           if (type === 'checkbox') {
             return (
               <Pressable
                 testID={`${testID}-checkbox`}
                 onPress={() => onChange(!value)}
-                className="flex-row items-center gap-3 py-2"
+                style={f.checkboxRow}
               >
                 <View
-                  className={`w-5 h-5 rounded border-2 items-center justify-center ${
-                    value
-                      ? 'bg-primary-700 border-primary-700'
-                      : 'border-neutral-300'
-                  }`}
+                  style={[f.checkboxBox, value ? f.checkboxOn : f.checkboxOff]}
                 >
-                  {value && <Check size={14} color="#fff" />}
+                  {value && <Check size={14} color={colors.white} />}
                 </View>
-                <Text className="text-base text-neutral-900 flex-1">
-                  {label}
-                </Text>
+                <Text style={f.checkboxLabel}>{label}</Text>
               </Pressable>
-            )
+            );
           }
 
-          // Text-based fields (text, email, password, number, phone, multiline)
-          const currentLength = typeof value === 'string' ? value.length : 0
+          // Text-based fields
+          const currentLength = typeof value === 'string' ? value.length : 0;
 
           return (
             <View>
-              {renderLabel(maxLength ? currentLength : undefined)}
-              <View className="flex-row items-center">
+              {renderLabel(maxLength != null ? currentLength : undefined)}
+              <View style={f.inputRow}>
                 {LeftIcon && (
-                  <View className="absolute left-3 z-10">
-                    <LeftIcon size={20} color="#A3A3A3" />
+                  <View style={f.leftIconWrap}>
+                    <LeftIcon size={20} color={colors.neutral400} />
                   </View>
                 )}
                 <TextInput
@@ -224,14 +209,14 @@ export function StepFormField({
                   value={value?.toString() ?? ''}
                   onChangeText={(text) => {
                     if (type === 'number' || type === 'phone') {
-                      onChange(text.replace(/[^0-9]/g, ''))
+                      onChange(text.replace(/[^0-9]/g, ''));
                     } else {
-                      onChange(text)
+                      onChange(text);
                     }
                   }}
                   onBlur={() => {
-                    setIsFocused(false)
-                    onBlur()
+                    setIsFocused(false);
+                    onBlur();
                   }}
                   onFocus={() => setIsFocused(true)}
                   secureTextEntry={isSecureField && !secureTextVisible}
@@ -243,41 +228,148 @@ export function StepFormField({
                   autoCapitalize={type === 'email' ? 'none' : 'sentences'}
                   autoComplete={type === 'email' ? 'email' : 'off'}
                   autoCorrect={false}
-                  placeholderTextColor="#A3A3A3"
-                  className={`flex-1 px-4 py-3 text-base bg-white border rounded-lg text-neutral-900 ${borderClass} ${
-                    LeftIcon ? 'pl-10' : ''
-                  } ${isSecureField || RightIcon ? 'pr-10' : ''} ${
-                    !isEditable ? 'bg-neutral-100 text-neutral-400' : ''
-                  } ${isMultiline ? 'min-h-[100px]' : 'min-h-[44px]'}`}
+                  placeholderTextColor={colors.neutral400}
+                  style={[
+                    f.textInput,
+                    error
+                      ? f.borderError
+                      : isFocused
+                        ? f.borderFocus
+                        : f.borderDefault,
+                    LeftIcon ? { paddingLeft: 40 } : undefined,
+                    isSecureField || RightIcon
+                      ? { paddingRight: 40 }
+                      : undefined,
+                    !isEditable && f.inputDisabled,
+                    isMultiline && f.inputMultiline,
+                  ]}
                 />
                 {isSecureField && (
                   <Pressable
-                    className="absolute right-3"
+                    style={f.rightIconWrap}
                     onPress={() => setSecureTextVisible(!secureTextVisible)}
                     testID={`${testID}-toggle-password`}
                   >
                     {secureTextVisible ? (
-                      <Eye size={20} color="#A3A3A3" />
+                      <Eye size={20} color={colors.neutral400} />
                     ) : (
-                      <EyeOff size={20} color="#A3A3A3" />
+                      <EyeOff size={20} color={colors.neutral400} />
                     )}
                   </Pressable>
                 )}
                 {!isSecureField && RightIcon && (
-                  <View className="absolute right-3">
-                    <RightIcon size={20} color="#A3A3A3" />
+                  <View style={f.rightIconWrap}>
+                    <RightIcon size={20} color={colors.neutral400} />
                   </View>
                 )}
               </View>
               {error && (
-                <Text className="mt-1 text-sm text-error-500">
-                  {error.message?.toString()}
-                </Text>
+                <Text style={f.errorText}>{error.message?.toString()}</Text>
               )}
             </View>
-          )
+          );
         }}
       />
     </View>
-  )
+  );
 }
+
+const f = StyleSheet.create({
+  container: { marginBottom: 16 },
+  label: {
+    marginBottom: 8,
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.neutral700,
+  },
+  counter: { color: colors.neutral400 },
+  errorText: { marginTop: 4, fontSize: 14, color: colors.error500 },
+  // Text input
+  inputRow: { flexDirection: 'row', alignItems: 'center' },
+  textInput: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderRadius: 8,
+    color: colors.neutral900,
+    minHeight: 44,
+  },
+  borderDefault: { borderColor: colors.neutral300 },
+  borderFocus: { borderColor: colors.primary700 },
+  borderError: { borderColor: colors.error500 },
+  inputDisabled: {
+    backgroundColor: colors.neutral100,
+    color: colors.neutral400,
+  },
+  inputMultiline: { minHeight: 100, textAlignVertical: 'top' },
+  leftIconWrap: { position: 'absolute', left: 12, zIndex: 1 },
+  rightIconWrap: { position: 'absolute', right: 12 },
+  // Radio
+  radioRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    minHeight: 44,
+    marginBottom: 8,
+  },
+  radioDefault: { borderColor: colors.neutral200 },
+  radioSelected: {
+    borderColor: colors.primary700,
+    backgroundColor: colors.primary50,
+  },
+  radioDot: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  radioDotOn: {
+    borderColor: colors.primary700,
+    backgroundColor: colors.primary700,
+  },
+  radioDotOff: { borderColor: colors.neutral300 },
+  radioDotInner: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.white,
+  },
+  radioLabel: { fontSize: 16, color: colors.neutral900 },
+  // Switch
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+  },
+  switchLabel: { flex: 1, fontSize: 16, color: colors.neutral900 },
+  // Checkbox
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 8,
+  },
+  checkboxBox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxOn: {
+    backgroundColor: colors.primary700,
+    borderColor: colors.primary700,
+  },
+  checkboxOff: { borderColor: colors.neutral300 },
+  checkboxLabel: { flex: 1, fontSize: 16, color: colors.neutral900 },
+});

@@ -1,21 +1,22 @@
-import { View, Text, Pressable } from 'react-native'
-import * as DocumentPicker from 'expo-document-picker'
-import { Upload, X, FileText } from 'lucide-react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import * as DocumentPicker from 'expo-document-picker';
+import { Upload, X, FileText } from 'lucide-react-native';
+import { colors } from '../../tokens';
 
 type FileFieldNWProps = {
-  label: string
-  value?: DocumentPicker.DocumentPickerAsset
-  onChange: (file: DocumentPicker.DocumentPickerAsset | null) => void
-  error?: string
-  disabled?: boolean
-  testID?: string
-}
+  label: string;
+  value?: DocumentPicker.DocumentPickerAsset;
+  onChange: (file: DocumentPicker.DocumentPickerAsset | null) => void;
+  error?: string;
+  disabled?: boolean;
+  testID?: string;
+};
 
 function formatFileSize(bytes: number | undefined): string {
-  if (!bytes) return ''
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / 1048576).toFixed(1)} MB`
+  if (!bytes) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1048576).toFixed(1)} MB`;
 }
 
 export function FileFieldNW({
@@ -27,67 +28,106 @@ export function FileFieldNW({
   testID,
 }: FileFieldNWProps) {
   const handlePick = async () => {
-    if (disabled) return
+    if (disabled) return;
     const result = await DocumentPicker.getDocumentAsync({
       type: ['image/*', 'application/pdf', 'application/msword', 'text/plain'],
       copyToCacheDirectory: true,
-    })
-
+    });
     if (!result.canceled && result.assets?.[0]) {
-      onChange(result.assets[0])
+      onChange(result.assets[0]);
     }
-  }
-
-  const handleRemove = () => {
-    onChange(null)
-  }
+  };
 
   return (
     <View testID={testID}>
-      <Text className="mb-2 text-sm font-medium text-neutral-700">{label}</Text>
+      <Text style={s.label}>{label}</Text>
 
       {value ? (
-        <View className="flex-row items-center p-4 bg-neutral-50 border border-neutral-200 rounded-lg">
-          <FileText size={24} color="#6B7280" />
-          <View className="flex-1 ml-3">
-            <Text className="text-sm font-medium text-neutral-900" numberOfLines={1}>
+        <View style={s.filePreview}>
+          <FileText size={24} color={colors.neutral500} />
+          <View style={s.fileInfo}>
+            <Text style={s.fileName} numberOfLines={1}>
               {value.name}
             </Text>
-            {value.size && (
-              <Text className="text-xs text-neutral-500">
-                {formatFileSize(value.size)}
-              </Text>
+            {value.size != null && (
+              <Text style={s.fileSize}>{formatFileSize(value.size)}</Text>
             )}
           </View>
           <Pressable
             testID={`${testID}-remove`}
-            onPress={handleRemove}
-            className="p-1"
+            onPress={() => onChange(null)}
+            style={s.removeBtn}
           >
-            <X size={20} color="#EF4444" />
+            <X size={20} color={colors.error500} />
           </Pressable>
         </View>
       ) : (
         <Pressable
           testID={`${testID}-pick`}
           onPress={handlePick}
-          className={`items-center justify-center p-6 border border-dashed rounded-lg ${
-            error ? 'border-error-500 bg-error-50' : 'border-neutral-300 bg-neutral-50'
-          } ${disabled ? 'opacity-50' : ''}`}
+          style={[
+            s.dropzone,
+            error ? s.dropzoneError : s.dropzoneDefault,
+            disabled && s.dropzoneDisabled,
+          ]}
         >
-          <Upload size={24} color={error ? '#EF4444' : '#A3A3A3'} />
-          <Text className={`mt-2 text-sm ${error ? 'text-error-500' : 'text-neutral-500'}`}>
+          <Upload
+            size={24}
+            color={error ? colors.error500 : colors.neutral400}
+          />
+          <Text
+            style={[s.dropzoneText, error ? s.dropzoneTextError : undefined]}
+          >
             Appuyer pour choisir un fichier
           </Text>
-          <Text className="mt-1 text-xs text-neutral-400">
-            PDF, Image, Word, Texte
-          </Text>
+          <Text style={s.dropzoneHint}>PDF, Image, Word, Texte</Text>
         </Pressable>
       )}
 
-      {error && !value && (
-        <Text className="mt-1 text-sm text-error-500">{error}</Text>
-      )}
+      {error && !value && <Text style={s.errorText}>{error}</Text>}
     </View>
-  )
+  );
 }
+
+const s = StyleSheet.create({
+  label: {
+    marginBottom: 8,
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.neutral700,
+  },
+  filePreview: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: colors.neutral50,
+    borderWidth: 1,
+    borderColor: colors.neutral200,
+    borderRadius: 8,
+  },
+  fileInfo: { flex: 1, marginLeft: 12 },
+  fileName: { fontSize: 14, fontWeight: '500', color: colors.neutral900 },
+  fileSize: { fontSize: 12, color: colors.neutral500 },
+  removeBtn: { padding: 4 },
+  dropzone: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderRadius: 8,
+  },
+  dropzoneDefault: {
+    borderColor: colors.neutral300,
+    backgroundColor: colors.neutral50,
+  },
+  dropzoneError: {
+    borderColor: colors.error500,
+    backgroundColor: colors.error50,
+  },
+  dropzoneDisabled: { opacity: 0.5 },
+  dropzoneText: { marginTop: 8, fontSize: 14, color: colors.neutral500 },
+  dropzoneTextError: { color: colors.error500 },
+  dropzoneHint: { marginTop: 4, fontSize: 12, color: colors.neutral400 },
+  errorText: { marginTop: 4, fontSize: 14, color: colors.error500 },
+});

@@ -1,18 +1,19 @@
-import { useState } from 'react'
-import { View, Text, Pressable, Platform } from 'react-native'
-import DateTimePicker from '@react-native-community/datetimepicker'
-import { Calendar } from 'lucide-react-native'
-import type { LucideIcon } from 'lucide-react-native'
+import { useState } from 'react';
+import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Calendar } from 'lucide-react-native';
+import type { LucideIcon } from 'lucide-react-native';
+import { colors } from '../../tokens';
 
 type DateFieldNWProps = {
-  label: string
-  value?: Date | string
-  onChange: (date: Date) => void
-  error?: string
-  disabled?: boolean
-  leftIcon?: LucideIcon
-  testID?: string
-}
+  label: string;
+  value?: Date | string;
+  onChange: (date: Date) => void;
+  error?: string;
+  disabled?: boolean;
+  leftIcon?: LucideIcon;
+  testID?: string;
+};
 
 export function DateFieldNW({
   label,
@@ -23,48 +24,35 @@ export function DateFieldNW({
   leftIcon: LeftIcon,
   testID,
 }: DateFieldNWProps) {
-  const [showPicker, setShowPicker] = useState(false)
-  const Icon = LeftIcon ?? Calendar
+  const [showPicker, setShowPicker] = useState(false);
+  const Icon = LeftIcon ?? Calendar;
 
-  const dateValue = value instanceof Date ? value : value ? new Date(value) : undefined
+  const dateValue =
+    value instanceof Date ? value : value ? new Date(value) : undefined;
 
-  const formattedDate = dateValue
-    ? dateValue.toLocaleDateString('fr-FR')
-    : ''
+  const formattedDate = dateValue ? dateValue.toLocaleDateString('fr-FR') : '';
 
-  const handleChange = (_event: any, selectedDate?: Date) => {
-    if (Platform.OS === 'android') {
-      setShowPicker(false)
-    }
-    if (selectedDate) {
-      onChange(selectedDate)
-    }
-  }
-
-  const handleConfirmIOS = () => {
-    setShowPicker(false)
-  }
+  const handleChange = (_event: unknown, selectedDate?: Date) => {
+    if (Platform.OS === 'android') setShowPicker(false);
+    if (selectedDate) onChange(selectedDate);
+  };
 
   return (
     <View testID={testID}>
-      <Text className="mb-2 text-sm font-medium text-neutral-700">{label}</Text>
+      <Text style={s.label}>{label}</Text>
       <Pressable
         testID={`${testID}-trigger`}
         onPress={() => !disabled && setShowPicker(true)}
-        className={`flex-row items-center px-4 py-3 bg-white border rounded-lg min-h-[44px] ${
-          error
-            ? 'border-error-500'
-            : 'border-neutral-300'
-        } ${disabled ? 'bg-neutral-100' : ''}`}
+        style={[
+          s.trigger,
+          error ? s.borderError : s.borderDefault,
+          disabled && s.bgDisabled,
+        ]}
       >
-        <View className="mr-3">
-          <Icon size={20} color="#A3A3A3" />
+        <View style={s.iconWrap}>
+          <Icon size={20} color={colors.neutral400} />
         </View>
-        <Text
-          className={`text-base flex-1 ${
-            formattedDate ? 'text-neutral-900' : 'text-neutral-400'
-          }`}
-        >
+        <Text style={[s.valueText, !formattedDate && s.placeholderText]}>
           {formattedDate || 'JJ/MM/AAAA'}
         </Text>
       </Pressable>
@@ -82,18 +70,44 @@ export function DateFieldNW({
           />
           {Platform.OS === 'ios' && (
             <Pressable
-              onPress={handleConfirmIOS}
-              className="items-center py-2 mt-1"
+              onPress={() => setShowPicker(false)}
+              style={s.iosConfirm}
             >
-              <Text className="text-primary-700 font-medium">Confirmer</Text>
+              <Text style={s.iosConfirmText}>Confirmer</Text>
             </Pressable>
           )}
         </View>
       )}
 
-      {error && (
-        <Text className="mt-1 text-sm text-error-500">{error}</Text>
-      )}
+      {error && <Text style={s.errorText}>{error}</Text>}
     </View>
-  )
+  );
 }
+
+const s = StyleSheet.create({
+  label: {
+    marginBottom: 8,
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.neutral700,
+  },
+  trigger: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderRadius: 8,
+    minHeight: 44,
+  },
+  borderDefault: { borderColor: colors.neutral300 },
+  borderError: { borderColor: colors.error500 },
+  bgDisabled: { backgroundColor: colors.neutral100 },
+  iconWrap: { marginRight: 12 },
+  valueText: { flex: 1, fontSize: 16, color: colors.neutral900 },
+  placeholderText: { color: colors.neutral400 },
+  iosConfirm: { alignItems: 'center', paddingVertical: 8, marginTop: 4 },
+  iosConfirmText: { color: colors.primary700, fontWeight: '500' },
+  errorText: { marginTop: 4, fontSize: 14, color: colors.error500 },
+});

@@ -1,112 +1,153 @@
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   withSpring,
-} from 'react-native-reanimated'
-import { Check } from 'lucide-react-native'
-import type { FormStep } from '../types'
+} from 'react-native-reanimated';
+import { Check } from 'lucide-react-native';
+import type { FormStep } from '../types';
+import { colors } from '../tokens';
 
 type StepFormProgressProps = {
-  steps: FormStep[]
-  currentStep: number
-  testID?: string
-}
+  steps: FormStep[];
+  currentStep: number;
+  testID?: string;
+};
 
 export function StepFormProgress({
   steps,
   currentStep,
   testID = 'step-form-progress',
 }: StepFormProgressProps) {
-  const progress = (currentStep + 1) / steps.length
+  const progress = (currentStep + 1) / steps.length;
 
   const progressStyle = useAnimatedStyle(() => ({
-    width: withSpring(`${progress * 100}%`, {
-      damping: 20,
-      stiffness: 90,
-    }),
-  }))
+    width: withSpring(`${progress * 100}%`, { damping: 20, stiffness: 90 }),
+  }));
 
-  const step = steps[currentStep]
+  const step = steps[currentStep];
 
   return (
-    <View testID={testID} className="mb-6">
-      <View className="mb-4">
-        <Text className="text-sm text-neutral-500 mb-1">
+    <View testID={testID} style={p.container}>
+      <View style={p.header}>
+        <Text style={p.stepCount}>
           {currentStep + 1} / {steps.length}
         </Text>
-        {step?.title && (
-          <Text className="text-2xl font-semibold text-neutral-900 mb-1">
-            {step.title}
-          </Text>
-        )}
+        {step?.title && <Text style={p.title}>{step.title}</Text>}
         {step?.description && (
-          <Text className="text-base text-neutral-600">
-            {step.description}
-          </Text>
+          <Text style={p.description}>{step.description}</Text>
         )}
       </View>
 
-      <View className="h-1 bg-neutral-200 rounded-full mb-6 overflow-hidden">
-        <Animated.View
-          className="h-full bg-primary-700 rounded-full"
-          style={progressStyle}
-        />
+      <View style={p.barTrack}>
+        <Animated.View style={[p.barFill, progressStyle]} />
       </View>
 
-      <View className="flex-row justify-between px-2">
-        {steps.map((s, index) => {
-          const isCompleted = index < currentStep
-          const isCurrent = index === currentStep
-          const isLast = index === steps.length - 1
+      <View style={p.dotsRow}>
+        {steps.map((st, index) => {
+          const isCompleted = index < currentStep;
+          const isCurrent = index === currentStep;
+          const isLast = index === steps.length - 1;
 
           return (
-            <View key={index} className="flex-row items-center flex-1">
-              <View className="items-center">
+            <View key={index} style={p.dotGroup}>
+              <View style={p.dotCenter}>
                 <View
-                  className={`w-8 h-8 rounded-full items-center justify-center ${
-                    isCompleted
-                      ? 'bg-success-600'
-                      : isCurrent
-                        ? 'bg-primary-700'
-                        : 'bg-neutral-300'
-                  }`}
+                  style={[
+                    p.dot,
+                    isCompleted && p.dotCompleted,
+                    isCurrent && p.dotCurrent,
+                    !isCompleted && !isCurrent && p.dotInactive,
+                  ]}
                 >
                   {isCompleted ? (
-                    <Check size={16} color="#fff" />
+                    <Check size={16} color={colors.white} />
                   ) : (
                     <Text
-                      className={`text-sm font-semibold ${
-                        isCurrent ? 'text-white' : 'text-neutral-500'
-                      }`}
+                      style={[
+                        p.dotNum,
+                        isCurrent ? p.dotNumCurrent : p.dotNumInactive,
+                      ]}
                     >
                       {index + 1}
                     </Text>
                   )}
                 </View>
-                {s.title && (
+                {st.title ? (
                   <Text
-                    className={`mt-2 text-xs text-center ${
-                      isCurrent
-                        ? 'text-primary-700 font-medium'
-                        : 'text-neutral-500'
-                    }`}
+                    style={[p.dotLabel, isCurrent && p.dotLabelCurrent]}
                     numberOfLines={1}
                   >
-                    {s.title}
+                    {st.title}
                   </Text>
-                )}
+                ) : null}
               </View>
               {!isLast && (
                 <View
-                  className={`flex-1 h-0.5 mx-1 ${
-                    index < currentStep ? 'bg-success-600' : 'bg-neutral-300'
-                  }`}
+                  style={[
+                    p.connector,
+                    index < currentStep ? p.connectorDone : p.connectorPending,
+                  ]}
                 />
               )}
             </View>
-          )
+          );
         })}
       </View>
     </View>
-  )
+  );
 }
+
+const p = StyleSheet.create({
+  container: { marginBottom: 24 },
+  header: { marginBottom: 16 },
+  stepCount: { fontSize: 14, color: colors.neutral500, marginBottom: 4 },
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: colors.neutral900,
+    marginBottom: 4,
+  },
+  description: { fontSize: 16, color: colors.neutral700 },
+  barTrack: {
+    height: 4,
+    backgroundColor: colors.neutral200,
+    borderRadius: 2,
+    marginBottom: 24,
+    overflow: 'hidden',
+  },
+  barFill: {
+    height: '100%',
+    backgroundColor: colors.primary700,
+    borderRadius: 2,
+  },
+  dotsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
+  },
+  dotGroup: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  dotCenter: { alignItems: 'center' },
+  dot: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dotCompleted: { backgroundColor: colors.success600 },
+  dotCurrent: { backgroundColor: colors.primary700 },
+  dotInactive: { backgroundColor: colors.neutral300 },
+  dotNum: { fontSize: 14, fontWeight: '600' },
+  dotNumCurrent: { color: colors.white },
+  dotNumInactive: { color: colors.neutral500 },
+  dotLabel: {
+    marginTop: 8,
+    fontSize: 12,
+    textAlign: 'center',
+    color: colors.neutral500,
+  },
+  dotLabelCurrent: { color: colors.primary700, fontWeight: '500' },
+  connector: { flex: 1, height: 2, marginHorizontal: 4 },
+  connectorDone: { backgroundColor: colors.success600 },
+  connectorPending: { backgroundColor: colors.neutral300 },
+});

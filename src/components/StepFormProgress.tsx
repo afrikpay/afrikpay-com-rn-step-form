@@ -11,14 +11,14 @@ type StepFormProgressProps = {
 };
 
 export function StepFormProgress({
-  steps,
-  currentStep,
+  steps, // tableau des etapes du formulaire
+  currentStep, // index de l'etape actuel 1, 2 etc
 }: StepFormProgressProps) {
   const progress = (currentStep + 1) / steps.length;
 
   const progressStyle = useAnimatedStyle(() => ({
     width: withSpring(`${progress * 100}%`, {
-      damping: 20,
+      damping: 20, // ralentissement
       stiffness: 90,
     }),
   }));

@@ -28,7 +28,7 @@ export function SelectFieldNW({
   testID,
 }: SelectFieldNWProps) {
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['50%'], []);
+  const snapPoints = useMemo(() => ['90%'], []);
   const selectedOption = options.find((opt) => opt.value === value);
 
   const handleOpen = useCallback(() => {

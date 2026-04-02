@@ -1,24 +1,24 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  ActivityIndicator,
-  StyleSheet,
-} from 'react-native';
 import { useForm } from 'react-hook-form';
-import { StepFormField } from './StepFormField';
-import { StepFormProgress } from './StepFormProgress';
-import { StepFormHeader } from './StepFormHeader';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import Animated, {
   FadeIn,
   FadeOut,
   SlideInRight,
   SlideOutLeft,
 } from 'react-native-reanimated';
-import type { FormData, FormField, StepFormBuilderProps } from '../types';
 import { colors } from '../tokens';
+import type { FormData, FormField, StepFormBuilderProps } from '../types';
+import { StepFormField } from './StepFormField';
+import { StepFormHeader } from './StepFormHeader';
+import { StepFormProgress } from './StepFormProgress';
 
 function isFieldVisible(field: FormField, values: FormData): boolean {
   if (!field.showWhen) return true;
@@ -127,8 +127,8 @@ export default function StepFormBuilder({
     onError?.(err);
   };
 
-  const renderFields = () =>
-    visibleFields.map((field) => (
+  const renderFields = () => {
+    return visibleFields.map((field) => (
       <StepFormField
         key={field.name}
         field={field}
@@ -138,6 +138,7 @@ export default function StepFormBuilder({
         formValues={formValues}
       />
     ));
+  };
 
   const btnDisabled = isProcessing || isNextDisabled;
 

@@ -95,13 +95,13 @@ export function StepFormField({
             return (
               <SelectFieldNW
                 label={label}
-                options={options ?? []}
                 value={value}
+                options={options ?? []}
                 onChange={onChange}
-                placeholder={placeholder}
                 error={error?.message?.toString()}
                 disabled={!isEditable}
                 testID={testID}
+                placeholder={placeholder}
               />
             );
           }

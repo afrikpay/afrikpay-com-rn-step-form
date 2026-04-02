@@ -35,7 +35,7 @@ export default function App() {
               fields: [
                 {
                   name: 'is_married',
-                  label: 'ÊteS-vous mariez?',
+                  label: 'Êtes-vous mariez?',
                   type: 'select',
                   validation: {
                     required: {
@@ -62,7 +62,7 @@ export default function App() {
                 },
                 {
                   name: 'is_worker',
-                  label: 'Travailels tu?',
+                  label: 'Travailles-vous?',
                   type: 'checkbox',
                 },
               ],
@@ -72,7 +72,7 @@ export default function App() {
               },
             },
           ]}
-          defaultValues={{ name: 'urlrichhhhh', is_worker: true }}
+          defaultValues={{ name: 'ulrich', is_worker: true }}
           externalValues={{}}
           onError={console.error}
           onExternalValueChange={console.warn}

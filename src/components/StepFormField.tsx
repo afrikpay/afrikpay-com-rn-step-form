@@ -84,7 +84,7 @@ export function StepFormField({
                 label={label}
                 value={value}
                 onChange={onChange}
-                error={error?.message?.toString()}
+                error={error?.message!.toString()}
                 disabled={!isEditable}
                 leftIcon={LeftIcon}
                 testID={testID}
@@ -98,7 +98,7 @@ export function StepFormField({
                 value={value}
                 options={options ?? []}
                 onChange={onChange}
-                error={error?.message?.toString()}
+                error={error?.message!.toString()}
                 disabled={!isEditable}
                 testID={testID}
                 placeholder={placeholder}

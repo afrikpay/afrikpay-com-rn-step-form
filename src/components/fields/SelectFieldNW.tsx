@@ -162,9 +162,10 @@ export function SelectFieldNW({
   value: string;
   options: Array<{ label: string; value: string }>;
   onChange: (val: string) => void;
-  error?: boolean;
+  error?: boolean | string;
   disabled?: boolean;
   placeholder?: string;
+  testID?: string;
 }) {
   const [visible, setVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(500)).current;
@@ -210,7 +211,7 @@ export function SelectFieldNW({
           <Text
             style={[
               sheetStyles.floatingLabel,
-              error && sheetStyles.floatingLabelError,
+              !!error && sheetStyles.floatingLabelError,
             ]}
           >
             {label}
@@ -225,7 +226,7 @@ export function SelectFieldNW({
               {selected?.label ?? placeholder ?? 'Sélectionner...'}
             </Text>
             <Text
-              style={[sheetStyles.chevron, error && sheetStyles.chevronError]}
+              style={[sheetStyles.chevron, !!error && sheetStyles.chevronError]}
             >
               <MaterialIcons
                 name="keyboard-arrow-down"

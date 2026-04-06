@@ -136,7 +136,8 @@ const s = StyleSheet.create({
  */
 
 // SelectFieldNW (bottom sheet natif, sans Menu, pour gerer le select avec react-hook-form)
-import { StyleSheet } from 'react-native';
+
+/*import { StyleSheet } from 'react-native';
 import { useState, useRef } from 'react';
 import {
   Animated,
@@ -196,7 +197,7 @@ export function SelectFieldNW({
 
   return (
     <View>
-      {/* Champ cliquable */}
+      
       <TouchableOpacity
         onPress={() => !disabled && openSheet()}
         activeOpacity={0.7}
@@ -240,7 +241,7 @@ export function SelectFieldNW({
         </View>
       </TouchableOpacity>
 
-      {/* Bottom Sheet */}
+     
       <Modal
         visible={visible}
         transparent
@@ -258,13 +259,13 @@ export function SelectFieldNW({
             { transform: [{ translateY: slideAnim }] },
           ]}
         >
-          {/* Handle */}
+         
           <View style={sheetStyles.handleContainer}>
             <View style={sheetStyles.handle} />
           </View>
-          {/* Titre */}
+          
           <Text style={sheetStyles.sheetTitle}>{label}</Text>
-          {/* Options */}
+         
           <FlatList
             data={options}
             keyExtractor={(item) => item.value}
@@ -371,4 +372,279 @@ const sheetStyles = StyleSheet.create({
     color: '#6200ee',
     fontWeight: '500',
   },
+});*/ // original
+
+// SelectFieldNW.tsx
+// v2 — Modal natif (pas de nested VirtualizedList) + tokens + Lucide
+import { useRef, useCallback, useState } from 'react';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Text,
+  Modal,
+  Animated,
+  Dimensions,
+  FlatList,
+} from 'react-native';
+import { ChevronDown, Check } from 'lucide-react-native';
+import { colors } from '../../tokens';
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+interface Option {
+  label: string;
+  value: string;
+}
+
+interface SelectFieldNWProps {
+  label: string;
+  value: string;
+  options?: Option[];
+  onChange: (val: string) => void;
+  error?: boolean | string;
+  disabled?: boolean;
+  placeholder?: string;
+  testID?: string;
+}
+
+// ─── Composant ───────────────────────────────────────────────────────────────
+export function SelectFieldNW({
+  label,
+  value,
+  options = [],
+  onChange,
+  error,
+  disabled,
+  placeholder,
+  testID,
+}: SelectFieldNWProps) {
+  const [visible, setVisible] = useState(false);
+  const slideAnim = useRef(new Animated.Value(500)).current;
+  const selected = options.find((o) => o.value === value);
+
+  // ── Animations ───────────────────────────────────────────────────────────
+  const openSheet = () => {
+    if (disabled) return;
+    setVisible(true);
+    Animated.spring(slideAnim, {
+      toValue: 0,
+      useNativeDriver: true,
+      bounciness: 4,
+    }).start();
+  };
+
+  const closeSheet = useCallback(() => {
+    const { height } = Dimensions.get('window');
+    Animated.timing(slideAnim, {
+      toValue: height,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => setVisible(false));
+  }, [slideAnim]);
+
+  const handleSelect = useCallback(
+    (val: string) => {
+      onChange(val);
+      closeSheet();
+    },
+    [onChange, closeSheet]
+  );
+
+  // ── Chaque option ─────────────────────────────────────────────────────────
+  const renderItem = useCallback(
+    ({ item }: { item: Option }) => {
+      const isSelected = value === item.value;
+      return (
+        <TouchableOpacity
+          style={[s.optionItem, isSelected && s.optionSelected]}
+          onPress={() => handleSelect(item.value)}
+          activeOpacity={0.6}
+          testID={`${testID}-option-${item.value}`}
+        >
+          <Text style={[s.optionText, isSelected && s.optionTextSelected]}>
+            {item.label}
+          </Text>
+          {isSelected && (
+            <Check size={18} color={colors.primary700} strokeWidth={2.5} />
+          )}
+        </TouchableOpacity>
+      );
+    },
+    [value, testID, handleSelect]
+  );
+
+  return (
+    <View testID={testID}>
+      {/* ── Champ cliquable ── */}
+      <TouchableOpacity
+        onPress={openSheet}
+        activeOpacity={0.7}
+        disabled={disabled}
+        testID={`${testID}-trigger`}
+      >
+        <View
+          style={[
+            s.trigger,
+            error ? s.triggerError : s.triggerDefault,
+            disabled && s.triggerDisabled,
+          ]}
+        >
+          {/* Label flottant */}
+          <Text style={[s.floatingLabel, !!error && s.floatingLabelError]}>
+            {label}
+          </Text>
+
+          {/* Valeur + chevron */}
+          <View style={s.triggerRow}>
+            <Text
+              style={[s.triggerValue, !selected && s.placeholderText]}
+              numberOfLines={1}
+            >
+              {selected?.label ?? placeholder ?? 'Sélectionner...'}
+            </Text>
+            <ChevronDown
+              size={20}
+              color={error ? colors.error500 : colors.primary700}
+              strokeWidth={2}
+            />
+          </View>
+        </View>
+      </TouchableOpacity>
+
+      {/* Message d'erreur */}
+      {!!error && typeof error === 'string' && (
+        <Text style={s.errorText}>{error}</Text>
+      )}
+
+      {/* ── Bottom Sheet via Modal (pas de nested VirtualizedList) ── */}
+      <Modal
+        visible={visible}
+        transparent
+        animationType="none"
+        onRequestClose={closeSheet}
+        testID={`${testID}-modal`}
+      >
+        {/* Overlay — ferme au tap en dehors */}
+        <TouchableOpacity
+          style={s.overlay}
+          activeOpacity={1}
+          onPress={closeSheet}
+        />
+
+        {/* Sheet animé */}
+        <Animated.View
+          style={[s.sheet, { transform: [{ translateY: slideAnim }] }]}
+        >
+          {/* Handle */}
+          <View style={s.handleContainer}>
+            <View style={s.handle} />
+          </View>
+
+          {/* Titre */}
+          <Text style={s.sheetTitle}>{label}</Text>
+
+          {/* Options — FlatList hors de tout ScrollView ici */}
+          <FlatList
+            data={options}
+            keyExtractor={(item) => item.value}
+            renderItem={renderItem}
+            contentContainerStyle={s.listContent}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          />
+        </Animated.View>
+      </Modal>
+    </View>
+  );
+}
+
+// ─── Styles ──────────────────────────────────────────────────────────────────
+const s = StyleSheet.create({
+  // Champ déclencheur
+  trigger: {
+    borderWidth: 1.5,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 10,
+    minHeight: 56,
+  },
+  triggerDefault: { borderColor: colors.neutral400 },
+  triggerError: { borderColor: colors.error500 },
+  triggerDisabled: { opacity: 0.5 },
+
+  floatingLabel: {
+    fontSize: 12,
+    color: colors.primary700,
+    marginBottom: 2,
+    fontWeight: '500',
+  },
+  floatingLabelError: { color: colors.error500 },
+
+  triggerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  triggerValue: { fontSize: 16, color: colors.neutral900, flex: 1 },
+  placeholderText: { color: colors.neutral400 },
+
+  errorText: {
+    fontSize: 12,
+    color: colors.error500,
+    marginTop: 4,
+    marginLeft: 4,
+  },
+
+  // Modal overlay
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+  },
+
+  // Sheet
+  sheet: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: colors.white,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    paddingBottom: 32,
+    maxHeight: '60%',
+  },
+  handleContainer: { alignItems: 'center', paddingVertical: 12 },
+  handle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.neutral300,
+  },
+  sheetTitle: {
+    fontSize: 13,
+    color: colors.neutral500,
+    fontWeight: '500',
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  listContent: { paddingBottom: 32 },
+
+  // Options
+  optionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderTopWidth: 0.5,
+    borderTopColor: colors.neutral100,
+  },
+  optionSelected: { backgroundColor: colors.primary50 },
+  optionText: { fontSize: 16, color: colors.neutral900 },
+  optionTextSelected: { color: colors.primary700, fontWeight: '500' },
 });

@@ -77,6 +77,7 @@ export function StepFormField({
         name={name}
         rules={validation}
         defaultValue={defaultValue}
+        shouldUnregister={false} //permet de forcer la validation des champs
         render={({ field: { onChange, onBlur, value } }) => {
           if (type === 'date') {
             return (
@@ -208,6 +209,20 @@ export function StepFormField({
                   placeholder={placeholder}
                   value={value?.toString() ?? ''}
                   onChangeText={(text) => {
+                    // Vérifier le maxLength pour bloquer la saisie
+                    const effectiveMaxLength =
+                      maxLength ||
+                      (typeof validation?.maxLength === 'object'
+                        ? validation.maxLength.value
+                        : validation?.maxLength);
+
+                    if (
+                      effectiveMaxLength &&
+                      text.length > effectiveMaxLength
+                    ) {
+                      return; // Bloquer la saisie si la limite est dépassée
+                    }
+
                     if (type === 'number' || type === 'phone') {
                       onChange(text.replace(/[^0-9]/g, ''));
                     } else {
@@ -236,10 +251,8 @@ export function StepFormField({
                       : isFocused
                         ? f.borderFocus
                         : f.borderDefault,
-                    LeftIcon ? { paddingLeft: 40 } : undefined,
-                    isSecureField || RightIcon
-                      ? { paddingRight: 40 }
-                      : undefined,
+                    LeftIcon && f.textInputWithLeftIcon,
+                    (isSecureField || RightIcon) && f.textInputWithRightIcon,
                     !isEditable && f.inputDisabled,
                     isMultiline && f.inputMultiline,
                   ]}
@@ -297,6 +310,8 @@ const f = StyleSheet.create({
     color: colors.neutral900,
     minHeight: 44,
   },
+  textInputWithLeftIcon: { paddingLeft: 40 },
+  textInputWithRightIcon: { paddingRight: 40 },
   borderDefault: { borderColor: colors.neutral300 },
   borderFocus: { borderColor: colors.primary700 },
   borderError: { borderColor: colors.error500 },

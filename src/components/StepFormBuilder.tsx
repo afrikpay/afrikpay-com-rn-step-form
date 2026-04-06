@@ -56,6 +56,8 @@ export default function StepFormBuilder({
     watch,
   } = useForm<FormData>({
     defaultValues,
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     ...(resolver ? { resolver } : {}),
   });
 
@@ -238,7 +240,7 @@ const b = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     marginTop: 24,
-    marginBottom: 40,
+    //marginBottom: 20,  // Réduit de 40 à 20
   },
   buttonsCenter: { alignItems: 'center' },
   buttonsRaised: { marginBottom: 32 },
@@ -246,7 +248,7 @@ const b = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
+    paddingVertical: 10, // Réduit de 14 à 10
     borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.neutral300,
@@ -256,7 +258,7 @@ const b = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
+    paddingVertical: 10, // Réduit de 14 à 10
     borderRadius: 8,
   },
   nextBtnActive: { backgroundColor: colors.primary700 },

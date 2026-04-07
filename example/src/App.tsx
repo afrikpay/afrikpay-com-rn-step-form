@@ -12,7 +12,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import PaymentSelector from '../../src//components/PayementSelector';
-import Header from '../../src/components/Header';
 //import { useNavigation } from '@react-navigation/native'; // si dispo dans l'app parente
 
 const data = {
@@ -115,7 +114,6 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={styles.container}>
-        <Header />
         <KeyboardAvoidingView
           style={styles.container}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // 'height' pour Android aussi

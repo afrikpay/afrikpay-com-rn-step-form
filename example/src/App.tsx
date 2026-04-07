@@ -12,7 +12,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import PaymentSelector from '../../src//components/PayementSelector';
-//import { useNavigation } from '@react-navigation/native'; // si dispo dans l'app parente
 
 const data = {
   marital_status: [

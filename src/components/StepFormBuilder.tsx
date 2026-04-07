@@ -235,7 +235,10 @@ const b = StyleSheet.create({
   },
   scroll: { flex: 1 },
   scrollContent: { flexGrow: 1 },
-  fieldsWrap: { flex: 1, marginTop: 16 },
+  fieldsWrap: {
+    //flex: 1,
+    marginTop: 16,
+  },
   buttonsRow: {
     flexDirection: 'row',
     gap: 12,

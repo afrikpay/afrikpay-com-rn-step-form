@@ -1,7 +1,6 @@
 // ── RadioField (Composant interne pour le type radio) ───────────────────────────────
 
 /*import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { RadioButton } from 'react-native-paper';
 
 // AJOUTÉ : Nouveau composant pour gérer l'affichage des boutons radio
 export function RadioField({

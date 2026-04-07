@@ -9,7 +9,6 @@ import {
   ScrollView,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-//import { Text } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import PaymentSelector from '../../src//components/PayementSelector';

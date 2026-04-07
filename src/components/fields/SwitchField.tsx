@@ -1,6 +1,5 @@
 // ── SwitchField (Composant interne pour le type switch) ──────────────────────────
 /*import { StyleSheet, Text, View } from 'react-native';
-import { Switch } from 'react-native-paper';
 
 type Props = {
   label: string;

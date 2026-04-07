@@ -1,16 +1,32 @@
-import { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Button, PaperProvider } from 'react-native-paper';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { StepFormField } from './StepFormField';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import Animated, {
   FadeIn,
   FadeOut,
   SlideInRight,
   SlideOutLeft,
 } from 'react-native-reanimated';
+import { colors } from '../tokens';
+import type { FormData, FormField, StepFormBuilderProps } from '../types';
+import { StepFormField } from './StepFormField';
 import { StepFormHeader } from './StepFormHeader';
-import type { FormData, StepFormBuilderProps } from '../types';
+import { StepFormProgress } from './StepFormProgress';
+
+function isFieldVisible(field: FormField, values: FormData): boolean {
+  if (!field.showWhen) return true;
+  const { field: watchField, value, condition } = field.showWhen;
+  const watchValue = values[watchField];
+  if (condition) return condition(watchValue);
+  return watchValue === value;
+}
 
 export default function StepFormBuilder({
   steps,
@@ -18,66 +34,84 @@ export default function StepFormBuilder({
   onError,
   defaultValues,
   externalValues,
+  onExternalValueChange,
+  resolver,
+  nextLabel = 'Suivant',
+  backLabel = 'Retour',
+  submitLabel = 'Valider',
+  testID = 'step-form',
 }: StepFormBuilderProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const isLastStep = currentStep === steps.length - 1;
+  const step = steps[currentStep];
 
   const {
     control,
     handleSubmit,
     trigger,
-    formState: { errors, isValid: formIsValid },
+    formState: { errors },
     getValues,
     setValue,
+    watch,
   } = useForm<FormData>({
     defaultValues,
+    ...(resolver ? { resolver } : {}),
   });
+
+  const formValues = watch();
 
   useEffect(() => {
     if (externalValues) {
-      Object.entries(externalValues).forEach(([name, value]) => {
-        setValue(name, value);
+      Object.entries(externalValues).forEach(([n, v]) => {
+        setValue(n, v);
+        onExternalValueChange?.(n, v);
       });
     }
-  }, [externalValues, setValue]);
+  }, [externalValues, setValue, onExternalValueChange]);
+
+  const visibleFields = useMemo(
+    () => (step?.fields ?? []).filter((f) => isFieldVisible(f, formValues)),
+    [step?.fields, formValues]
+  );
+
+  const isNextDisabled = useMemo(() => {
+    if (!step?.isNextDisabled) return false;
+    if (typeof step.isNextDisabled === 'function')
+      return step.isNextDisabled(formValues);
+    return step.isNextDisabled;
+  }, [step, formValues]);
+
+  const goToNext = useCallback(() => {
+    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+  }, [steps.length]);
+
+  const goToPrev = useCallback(() => {
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
+  }, []);
 
   const handleNext = async () => {
-    const fields = steps[currentStep]?.fields.map((field) => field.name);
-    const isValid = await trigger(fields);
-
+    const fieldNames = visibleFields.map((f) => f.name);
+    const isValid = await trigger(fieldNames);
     if (!isValid) return;
 
-    const currentStepData = getValues();
-
-    if (steps[currentStep]?.onStepComplete) {
+    const data = getValues();
+    if (step?.onStepComplete) {
       setIsProcessing(true);
       try {
-        const result =
-          await steps[currentStep]?.onStepComplete(currentStepData);
-
-        // If the handler returns data, merge it with the form data
+        const result = await step.onStepComplete(data);
         if (result) {
-          Object.entries(result).forEach(([key, value]) => {
-            setValue(key, value);
-          });
+          Object.entries(result).forEach(([key, val]) => setValue(key, val));
         }
-      } catch (error: unknown) {
-        console.error('Step completion error:', error);
-        const errorMessage =
-          error instanceof Error ? error.message : 'Unknown error';
-        onError?.({ stepError: errorMessage });
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        onError?.({ stepError: msg });
         return;
       } finally {
         setIsProcessing(false);
       }
     }
-
-    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
-  };
-
-  const handleBack = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    goToNext();
   };
 
   const handleFormSubmit = async (data: FormData) => {
@@ -89,119 +123,144 @@ export default function StepFormBuilder({
     }
   };
 
-  const handleFormError = (error: Record<string, any>) => {
-    onError?.(error);
+  const handleFormError = (err: Record<string, any>) => {
+    onError?.(err);
   };
 
+  const renderFields = () => {
+    return visibleFields.map((field) => (
+      <StepFormField
+        key={field.name}
+        field={field}
+        control={control}
+        error={errors[field.name]}
+        defaultValue={defaultValues?.[field.name]}
+        formValues={formValues}
+      />
+    ));
+  };
+
+  const btnDisabled = isProcessing || isNextDisabled;
+
   return (
-    <PaperProvider>
-      <View style={styles.container}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.contentContainer}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="always"
+    <View testID={testID} style={b.root}>
+      <ScrollView
+        style={b.scroll}
+        contentContainerStyle={b.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <StepFormProgress
+          steps={steps}
+          currentStep={currentStep}
+          testID={`${testID}-progress`}
+        />
+
+        <StepFormHeader
+          steps={steps}
+          currentStep={currentStep}
+          data={getValues()}
+        />
+
+        <Animated.View
+          entering={SlideInRight.duration(250)}
+          exiting={SlideOutLeft.duration(200)}
+          key={currentStep}
+          style={b.fieldsWrap}
         >
-          <StepFormHeader
-            steps={steps}
-            currentStep={currentStep}
-            data={getValues()}
-          />
-          <Animated.View
-            entering={SlideInRight}
-            exiting={SlideOutLeft}
-            key={currentStep}
-            style={styles.fieldsContainer}
-          >
-            {steps[currentStep]?.fields.map((field) => (
-              <StepFormField
-                key={field.name}
-                field={field}
-                control={control}
-                error={errors[field.name]}
-                defaultValue={defaultValues?.[field.name]}
-              />
-            ))}
-          </Animated.View>
-          <Animated.View
-            style={styles.buttonsContainer}
-            entering={FadeIn}
-            exiting={FadeOut}
-          >
-            {currentStep > 0 && (
-              <Button
-                mode="outlined"
-                onPress={handleBack}
-                style={styles.button}
-                theme={{ roundness: 5 }}
-              >
-                Back
-              </Button>
-            )}
-            <Button
-              mode="contained"
-              onPress={
-                isLastStep
-                  ? handleSubmit(handleFormSubmit, handleFormError)
-                  : handleNext
-              }
-              loading={isProcessing}
-              style={styles.button}
-              theme={{ roundness: 5 }}
-              disabled={isProcessing || (isLastStep && !formIsValid)}
+          {step?.type === 'custom' && step.render ? (
+            <>
+              {step.render(getValues(), goToNext, goToPrev)}
+              {visibleFields.length > 0 && renderFields()}
+            </>
+          ) : (
+            renderFields()
+          )}
+        </Animated.View>
+
+        <Animated.View
+          style={[
+            b.buttonsRow,
+            step?.buttonPosition === 'center' && b.buttonsCenter,
+            step?.buttonPosition === 'bottom-raised' && b.buttonsRaised,
+          ]}
+          entering={FadeIn}
+          exiting={FadeOut}
+        >
+          {currentStep > 0 && (
+            <Pressable
+              testID={`${testID}-back`}
+              onPress={goToPrev}
+              disabled={isProcessing}
+              style={b.backBtn}
             >
-              {isLastStep ? 'Valider' : 'Suivant'}
-            </Button>
-          </Animated.View>
-        </ScrollView>
-      </View>
-      {/* <Portal>
-        <Modal
-          onDismiss={console.log}
-          contentContainerStyle={{
-            flex: 1,
-            padding: 20,
-          }}
-          dismissable={false}
-          visible
-        >
-          <ScrollView contentContainerStyle={{ flex: 1 }}>
-            {options?.map(renderOption)}
-          </ScrollView>
-          <View>
-            <Button mode="outlined">Cancel</Button>
-            <Button mode="contained-tonal">Done</Button>
-          </View>
-        </Modal>
-      </Portal> */}
-    </PaperProvider>
+              <Text style={b.backText}>{backLabel}</Text>
+            </Pressable>
+          )}
+          <Pressable
+            testID={`${testID}-next`}
+            onPress={
+              isLastStep
+                ? handleSubmit(handleFormSubmit, handleFormError)
+                : handleNext
+            }
+            disabled={btnDisabled}
+            style={[
+              b.nextBtn,
+              btnDisabled ? b.nextBtnDisabled : b.nextBtnActive,
+            ]}
+          >
+            {isProcessing ? (
+              <ActivityIndicator color={colors.white} size="small" />
+            ) : (
+              <Text style={[b.nextText, btnDisabled && b.nextTextDisabled]}>
+                {isLastStep ? submitLabel : nextLabel}
+              </Text>
+            )}
+          </Pressable>
+        </Animated.View>
+      </ScrollView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
+const b = StyleSheet.create({
+  root: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 24,
-    gap: 16,
+    backgroundColor: colors.white,
+    paddingHorizontal: 24,
+    paddingTop: 24,
   },
-  contentContainer: { flexGrow: 1 },
-  scrollView: {
-    flex: 1,
-  },
-  fieldsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  buttonsContainer: {
+  scroll: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
+  fieldsWrap: { flex: 1, marginTop: 16 },
+  buttonsRow: {
     flexDirection: 'row',
     gap: 12,
     marginTop: 24,
+    marginBottom: 40,
   },
-  button: {
+  buttonsCenter: { alignItems: 'center' },
+  buttonsRaised: { marginBottom: 32 },
+  backBtn: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.neutral300,
   },
-  primaryButton: {
-    backgroundColor: '#3B82F6',
+  backText: { fontSize: 16, fontWeight: '500', color: colors.neutral700 },
+  nextBtn: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 8,
   },
+  nextBtnActive: { backgroundColor: colors.primary700 },
+  nextBtnDisabled: { backgroundColor: colors.neutral200 },
+  nextText: { fontSize: 16, fontWeight: '600', color: colors.white },
+  nextTextDisabled: { color: colors.neutral400 },
 });

@@ -235,12 +235,13 @@ const b = StyleSheet.create({
   },
   scroll: { flex: 1 },
   scrollContent: { flexGrow: 1 },
-  fieldsWrap: { flex: 1, marginTop: 16 },
+  fieldsWrap: {
+    marginTop: 16,
+  },
   buttonsRow: {
     flexDirection: 'row',
     gap: 12,
     marginTop: 24,
-    //marginBottom: 20,  // Réduit de 40 à 20
   },
   buttonsCenter: { alignItems: 'center' },
   buttonsRaised: { marginBottom: 32 },

@@ -46,6 +46,14 @@ export default function StepFormBuilder({
   const isLastStep = currentStep === steps.length - 1;
   const step = steps[currentStep];
 
+  // Options de progression pour l'étape actuelle
+  const progressOptions = {
+    showProgress: step?.showProgress ?? true,
+    showProgressBar: step?.showProgressBar ?? true,
+    showStepNumbers: step?.showStepNumbers ?? true,
+    showStepCount: step?.showStepCount ?? true,
+  };
+
   const {
     control,
     handleSubmit,
@@ -156,6 +164,7 @@ export default function StepFormBuilder({
           steps={steps}
           currentStep={currentStep}
           testID={`${testID}-progress`}
+          {...progressOptions}
         />
 
         <StepFormHeader
@@ -234,7 +243,10 @@ const b = StyleSheet.create({
     paddingTop: 24,
   },
   scroll: { flex: 1 },
-  scrollContent: { flexGrow: 1 },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 30, // Espace pour éviter que le contenu colle au footer
+  },
   fieldsWrap: {
     marginTop: 16,
   },

@@ -11,12 +11,20 @@ type StepFormProgressProps = {
   steps: FormStep[];
   currentStep: number;
   testID?: string;
+  showProgress?: boolean;
+  showProgressBar?: boolean;
+  showStepNumbers?: boolean;
+  showStepCount?: boolean;
 };
 
 export function StepFormProgress({
   steps,
   currentStep,
   testID = 'step-form-progress',
+  showProgress = true,
+  showProgressBar = true,
+  showStepNumbers = true,
+  showStepCount = true,
 }: StepFormProgressProps) {
   const progress = (currentStep + 1) / steps.length;
 
@@ -26,73 +34,86 @@ export function StepFormProgress({
 
   const step = steps[currentStep];
 
+  // Si toute la progression est masquée, ne rien afficher
+  if (!showProgress) {
+    return null;
+  }
+
   return (
     <View testID={testID} style={p.container}>
       <View style={p.header}>
-        <Text style={p.stepCount}>
-          {currentStep + 1} / {steps.length}
-        </Text>
+        {showStepCount && (
+          <Text style={p.stepCount}>
+            {currentStep + 1} / {steps.length}
+          </Text>
+        )}
         {step?.title && <Text style={p.title}>{step.title}</Text>}
         {step?.description && (
           <Text style={p.description}>{step.description}</Text>
         )}
       </View>
 
-      <View style={p.barTrack}>
-        <Animated.View style={[p.barFill, progressStyle]} />
-      </View>
+      {showProgressBar && (
+        <View style={p.barTrack}>
+          <Animated.View style={[p.barFill, progressStyle]} />
+        </View>
+      )}
 
-      <View style={p.dotsRow}>
-        {steps.map((st, index) => {
-          const isCompleted = index < currentStep;
-          const isCurrent = index === currentStep;
-          const isLast = index === steps.length - 1;
+      {showStepNumbers && (
+        <View style={p.dotsRow}>
+          {steps.map((st, index) => {
+            const isCompleted = index < currentStep;
+            const isCurrent = index === currentStep;
+            const isLast = index === steps.length - 1;
 
-          return (
-            <View key={index} style={p.dotGroup}>
-              <View style={p.dotCenter}>
-                <View
-                  style={[
-                    p.dot,
-                    isCompleted && p.dotCompleted,
-                    isCurrent && p.dotCurrent,
-                    !isCompleted && !isCurrent && p.dotInactive,
-                  ]}
-                >
-                  {isCompleted ? (
-                    <Check size={16} color={colors.white} />
-                  ) : (
-                    <Text
-                      style={[
-                        p.dotNum,
-                        isCurrent ? p.dotNumCurrent : p.dotNumInactive,
-                      ]}
-                    >
-                      {index + 1}
-                    </Text>
-                  )}
-                </View>
-                {st.title ? (
-                  <Text
-                    style={[p.dotLabel, isCurrent && p.dotLabelCurrent]}
-                    numberOfLines={1}
+            return (
+              <View key={index} style={p.dotGroup}>
+                <View style={p.dotCenter}>
+                  <View
+                    style={[
+                      p.dot,
+                      isCompleted && p.dotCompleted,
+                      isCurrent && p.dotCurrent,
+                      !isCompleted && !isCurrent && p.dotInactive,
+                    ]}
                   >
-                    {st.title}
-                  </Text>
-                ) : null}
+                    {isCompleted ? (
+                      <Check size={16} color={colors.white} />
+                    ) : (
+                      <Text
+                        style={[
+                          p.dotNum,
+                          isCurrent ? p.dotNumCurrent : p.dotNumInactive,
+                        ]}
+                      >
+                        {index + 1}
+                      </Text>
+                    )}
+                  </View>
+                  {st.title ? (
+                    <Text
+                      style={[p.dotLabel, isCurrent && p.dotLabelCurrent]}
+                      numberOfLines={1}
+                    >
+                      {st.title}
+                    </Text>
+                  ) : null}
+                </View>
+                {!isLast && (
+                  <View
+                    style={[
+                      p.connector,
+                      index < currentStep
+                        ? p.connectorDone
+                        : p.connectorPending,
+                    ]}
+                  />
+                )}
               </View>
-              {!isLast && (
-                <View
-                  style={[
-                    p.connector,
-                    index < currentStep ? p.connectorDone : p.connectorPending,
-                  ]}
-                />
-              )}
-            </View>
-          );
-        })}
-      </View>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 }

@@ -131,6 +131,10 @@ export default function App() {
                 steps={[
                   {
                     title: 'Information Personnelles',
+                    showProgressBar: true, // Pas de barre
+                    showStepNumbers: false, // Pas de numéros
+                    showStepCount: false,
+
                     fields: [
                       {
                         name: 'name',
@@ -157,6 +161,9 @@ export default function App() {
 
                   {
                     title: 'Information Legales',
+                    showProgressBar: true, // Pas de barre
+                    showStepNumbers: false, // Pas de numéros
+                    showStepCount: false,
                     fields: [
                       {
                         name: 'is_married',

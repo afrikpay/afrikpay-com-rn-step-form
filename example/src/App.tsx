@@ -137,10 +137,20 @@ export default function App() {
 
                     fields: [
                       {
+                        name: 'gender',
+                        label: 'Genre',
+                        type: 'select',
+                        options: [
+                          { label: 'Masculin', value: 'male' },
+                          { label: 'Féminin', value: 'female' },
+                        ],
+                      },
+                      {
                         name: 'name',
-                        label: 'Nom',
+                        label: 'ou',
+                        placeholder: 'saisissez votre sexe',
                         type: 'text',
-                        validation: { required: 'Nom requis' },
+                        validation: { required: 'Sexe requis' },
                       },
                       {
                         name: 'age',
@@ -209,7 +219,7 @@ export default function App() {
                   },
 
                   {
-                    title: 'Information Personnelles',
+                    title: 'Informations Personnelles',
                     fields: [
                       {
                         name: 'name',
@@ -572,7 +582,7 @@ export default function App() {
                     },
                   },
                 ]}
-                defaultValues={{ name: 'ulrich', is_worker: true }}
+                defaultValues={{ name: '', is_worker: true }}
                 externalValues={{}}
                 onError={console.error}
                 onExternalValueChange={console.warn}

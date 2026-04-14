@@ -131,9 +131,9 @@ export default function App() {
                 steps={[
                   {
                     title: 'Information Personnelles',
-                    showProgressBar: false, // Pas de barre
-                    showStepNumbers: false, // Pas de numéros
-                    showStepCount: false,
+                    showProgressBar: true, // Barre de progression
+                    showStepNumbers: false, // Pas de numéros de étape
+                    showStepCount: false, // Pas de compteur d'étapes
 
                     fields: [
                       {
@@ -161,9 +161,9 @@ export default function App() {
 
                   {
                     title: 'Information Legales',
-                    showProgressBar: true, // Pas de barre
-                    showStepNumbers: false, // Pas de numéros
-                    showStepCount: false,
+                    showProgressBar: true, //barre de progression
+                    showStepNumbers: false, // Pas de numéros de étape
+                    showStepCount: false, // Pas de compteur d'étapes
                     fields: [
                       {
                         name: 'is_married',
@@ -403,16 +403,16 @@ export default function App() {
                   // ─────────────────────────
                   // ETAPE 5 (RECAP + SUBMIT AUTO)
                   {
-                    title: 'Récapitulatif ggdhdjdjjfjfjjfjfjfjf djfjfjdjdkdkd ',
+                    title: 'Récapitulatif',
                     titleStyle: {
                       color: '#EF4444', // couleur du titre
-                      fontWeight: '600', // poids du titre
+                      fontWeight: '700', // poids du titre
                       fontSize: 20, // taille du titre
                       numberOfLines: 1, // nombre de lignes
                     },
                     showProgressBar: true, // afficher la barre
                     showStepNumbers: true, // afficher les numéros
-                    showStepCount: true, // afficher le count
+                    showStepCount: false, // afficher le count
                     type: 'custom',
 
                     fields: getPaymentConfig(selectedMethod)?.requiresPin

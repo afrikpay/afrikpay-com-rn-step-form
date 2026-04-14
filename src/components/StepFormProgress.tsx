@@ -116,7 +116,7 @@ export function StepFormProgress({
                     ]}
                   >
                     {isCompleted ? (
-                      <Check size={16} color={colors.white} />
+                      <Check size={14} color={colors.white} />
                     ) : (
                       <Text
                         style={[
@@ -193,16 +193,16 @@ const p = StyleSheet.create({
   dotGroup: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   dotCenter: { alignItems: 'center' },
   dot: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   dotCompleted: { backgroundColor: colors.success600 },
   dotCurrent: { backgroundColor: colors.primary700 },
   dotInactive: { backgroundColor: colors.neutral300 },
-  dotNum: { fontSize: 14, fontWeight: '600' },
+  dotNum: { fontSize: 10, fontWeight: '500' },
   dotNumCurrent: { color: colors.white },
   dotNumInactive: { color: colors.neutral500 },
   dotLabel: {

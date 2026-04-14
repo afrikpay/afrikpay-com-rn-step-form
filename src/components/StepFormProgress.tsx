@@ -39,9 +39,14 @@ export function StepFormProgress({
     return null;
   }
 
+  // Calculer l'espace en bas en fonction des éléments visibles
+  const hasVisibleElements =
+    showStepCount || showProgressBar || showStepNumbers;
+  const marginBottom = hasVisibleElements ? 2 : 8; // Réduit si seulement le titre est visible
+
   return (
-    <View testID={testID} style={p.container}>
-      <View style={p.header}>
+    <View testID={testID} style={[p.container, { marginBottom }]}>
+      <View style={[p.header, { marginBottom: showProgressBar ? 16 : 8 }]}>
         {showStepCount && (
           <Text style={p.stepCount}>
             {currentStep + 1} / {steps.length}

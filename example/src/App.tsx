@@ -131,7 +131,7 @@ export default function App() {
                 steps={[
                   {
                     title: 'Information Personnelles',
-                    showProgressBar: true, // Pas de barre
+                    showProgressBar: false, // Pas de barre
                     showStepNumbers: false, // Pas de numéros
                     showStepCount: false,
 
@@ -404,6 +404,9 @@ export default function App() {
                   // ETAPE 5 (RECAP + SUBMIT AUTO)
                   {
                     title: 'Récapitulatif',
+                    showProgressBar: true, // Pas de barre
+                    showStepNumbers: true, // Pas de numéros
+                    showStepCount: true,
                     type: 'custom',
 
                     fields: getPaymentConfig(selectedMethod)?.requiresPin

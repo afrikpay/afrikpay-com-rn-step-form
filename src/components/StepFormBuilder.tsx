@@ -52,6 +52,7 @@ export default function StepFormBuilder({
     showProgressBar: step?.showProgressBar ?? true,
     showStepNumbers: step?.showStepNumbers ?? true,
     showStepCount: step?.showStepCount ?? true,
+    titleStyle: step?.titleStyle, // Style personnalisé du titre
   };
 
   const {

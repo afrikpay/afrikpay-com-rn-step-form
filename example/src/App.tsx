@@ -403,10 +403,16 @@ export default function App() {
                   // ─────────────────────────
                   // ETAPE 5 (RECAP + SUBMIT AUTO)
                   {
-                    title: 'Récapitulatif',
-                    showProgressBar: true, // Pas de barre
-                    showStepNumbers: true, // Pas de numéros
-                    showStepCount: true,
+                    title: 'Récapitulatif ggdhdjdjjfjfjjfjfjfjf djfjfjdjdkdkd ',
+                    titleStyle: {
+                      color: '#EF4444', // couleur du titre
+                      fontWeight: '600', // poids du titre
+                      fontSize: 20, // taille du titre
+                      numberOfLines: 1, // nombre de lignes
+                    },
+                    showProgressBar: true, // afficher la barre
+                    showStepNumbers: true, // afficher les numéros
+                    showStepCount: true, // afficher le count
                     type: 'custom',
 
                     fields: getPaymentConfig(selectedMethod)?.requiresPin

@@ -15,6 +15,24 @@ type StepFormProgressProps = {
   showProgressBar?: boolean;
   showStepNumbers?: boolean;
   showStepCount?: boolean;
+  // Props pour personnaliser le titre
+  titleStyle?: {
+    fontSize?: number;
+    fontWeight?:
+      | 'normal'
+      | 'bold'
+      | '100'
+      | '200'
+      | '300'
+      | '400'
+      | '500'
+      | '600'
+      | '700'
+      | '800'
+      | '900';
+    color?: string;
+    numberOfLines?: number;
+  };
 };
 
 export function StepFormProgress({
@@ -25,6 +43,7 @@ export function StepFormProgress({
   showProgressBar = true,
   showStepNumbers = true,
   showStepCount = true,
+  titleStyle,
 }: StepFormProgressProps) {
   const progress = (currentStep + 1) / steps.length;
 
@@ -52,7 +71,14 @@ export function StepFormProgress({
             {currentStep + 1} / {steps.length}
           </Text>
         )}
-        {step?.title && <Text style={p.title}>{step.title}</Text>}
+        {step?.title && (
+          <Text
+            style={[p.title, titleStyle]}
+            numberOfLines={titleStyle?.numberOfLines}
+          >
+            {step.title}
+          </Text>
+        )}
         {step?.description && (
           <Text style={p.description}>{step.description}</Text>
         )}

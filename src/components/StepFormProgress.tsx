@@ -63,9 +63,16 @@ export function StepFormProgress({
     showStepCount || showProgressBar || showStepNumbers;
   const marginBottom = hasVisibleElements ? 2 : 8; // Réduit si seulement le titre est visible
 
+  // <View style={[p.header, { marginBottom: showProgressBar ? 16 : 8 }]}>
+
   return (
     <View testID={testID} style={[p.container, { marginBottom }]}>
-      <View style={[p.header, { marginBottom: showProgressBar ? 16 : 8 }]}>
+      <View
+        style={[
+          p.header,
+          showProgressBar ? p.headerMarginNormal : p.headerMarginCompact,
+        ]}
+      >
         {showStepCount && (
           <Text style={p.stepCount}>
             {currentStep + 1} / {steps.length}
@@ -152,6 +159,12 @@ export function StepFormProgress({
 const p = StyleSheet.create({
   container: { marginBottom: 24 },
   header: { marginBottom: 16 },
+  headerMarginNormal: {
+    marginBottom: 16,
+  },
+  headerMarginCompact: {
+    marginBottom: 8,
+  },
   stepCount: { fontSize: 14, color: colors.neutral500, marginBottom: 4 },
   title: {
     fontSize: 24,

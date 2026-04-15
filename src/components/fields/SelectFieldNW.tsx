@@ -132,8 +132,18 @@ const s = StyleSheet.create({
   optionSelected: { backgroundColor: colors.primary50 },
   optionText: { fontSize: 16, color: colors.neutral900 },
   optionTextSelected: { color: colors.primary700, fontWeight: '500' },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  clearButton: {
+    padding: 4,
+    borderRadius: 4,
+  },
 });
- */
 
 // SelectFieldNW (bottom sheet natif, sans Menu, pour gerer le select avec react-hook-form)
 
@@ -387,7 +397,7 @@ import {
   Dimensions,
   FlatList,
 } from 'react-native';
-import { ChevronDown, Check } from 'lucide-react-native';
+import { ChevronDown, Check, X } from 'lucide-react-native';
 import { colors } from '../../tokens';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -450,6 +460,11 @@ export function SelectFieldNW({
     [onChange, closeSheet]
   );
 
+  const handleClear = useCallback(() => {
+    onChange('');
+    closeSheet();
+  }, [onChange, closeSheet]);
+
   // ── Chaque option ─────────────────────────────────────────────────────────
   const renderItem = useCallback(
     ({ item }: { item: Option }) => {
@@ -494,7 +509,7 @@ export function SelectFieldNW({
             {label}
           </Text>
 
-          {/* Valeur + chevron */}
+          {/* Valeur + icônes */}
           <View style={s.triggerRow}>
             <Text
               style={[s.triggerValue, !selected && s.placeholderText]}
@@ -502,11 +517,22 @@ export function SelectFieldNW({
             >
               {selected?.label ?? placeholder ?? 'Sélectionner...'}
             </Text>
-            <ChevronDown
-              size={20}
-              color={error ? colors.error500 : colors.primary700}
-              strokeWidth={2}
-            />
+            <View style={s.iconContainer}>
+              {value && (
+                <TouchableOpacity
+                  onPress={handleClear}
+                  style={s.clearButtonTrigger}
+                  testID={`${testID}-clear`}
+                >
+                  <X size={16} color={colors.neutral500} />
+                </TouchableOpacity>
+              )}
+              <ChevronDown
+                size={20}
+                color={error ? colors.error500 : colors.primary700}
+                strokeWidth={2}
+              />
+            </View>
           </View>
         </View>
       </TouchableOpacity>
@@ -647,4 +673,15 @@ const s = StyleSheet.create({
   optionSelected: { backgroundColor: colors.primary50 },
   optionText: { fontSize: 16, color: colors.neutral900 },
   optionTextSelected: { color: colors.primary700, fontWeight: '500' },
+
+  // Icônes dans le champ trigger
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  clearButtonTrigger: {
+    padding: 2,
+    borderRadius: 2,
+  },
 });

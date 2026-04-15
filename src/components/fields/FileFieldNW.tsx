@@ -10,6 +10,8 @@ type FileFieldNWProps = {
   error?: string;
   disabled?: boolean;
   testID?: string;
+  placeholder?: string;
+  acceptedTypes?: string[];
 };
 
 function formatFileSize(bytes: number | undefined): string {
@@ -19,6 +21,38 @@ function formatFileSize(bytes: number | undefined): string {
   return `${(bytes / 1048576).toFixed(1)} MB`;
 }
 
+function formatAcceptedTypes(types?: string[]): string {
+  if (!types || types.length === 0) return 'PDF, Image, Word, Texte';
+
+  const typeMap: { [key: string]: string } = {
+    'application/pdf': 'PDF',
+    'image/*': 'Image', // pour accepter tous les types d'image
+    'image/jpeg': 'Image',
+    'image/png': 'Image',
+    'application/msword': 'Word', // pour accepter les documents Word
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+      'Word',
+    'text/plain': 'Texte', // pour accepter les fichiers texte
+  };
+
+  const formattedTypes = types.map((type) => {
+    // Vérifier les correspondances exactes d'abord
+    if (typeMap[type]) return typeMap[type];
+    // Vérifier les correspondances partielles (ex: image/*)
+    for (const [key, value] of Object.entries(typeMap)) {
+      if (key.includes('*') && type.startsWith(key.replace('*', ''))) {
+        return value;
+      }
+    }
+    // Retourner le type original si non trouvé
+    return type.split('/').pop()?.toUpperCase() || type;
+  });
+
+  // Supprimer les doublons
+  const uniqueTypes = [...new Set(formattedTypes)];
+  return uniqueTypes.join(', ');
+}
+
 export function FileFieldNW({
   label,
   value,
@@ -26,11 +60,18 @@ export function FileFieldNW({
   error,
   disabled = false,
   testID,
+  placeholder,
+  acceptedTypes,
 }: FileFieldNWProps) {
   const handlePick = async () => {
     if (disabled) return;
     const result = await DocumentPicker.getDocumentAsync({
-      type: ['image/*', 'application/pdf', 'application/msword', 'text/plain'],
+      type: acceptedTypes || [
+        'image/*',
+        'application/pdf',
+        'application/msword',
+        'text/plain',
+      ],
       copyToCacheDirectory: true,
     });
     if (!result.canceled && result.assets?.[0]) {
@@ -75,12 +116,16 @@ export function FileFieldNW({
             size={24}
             color={error ? colors.error500 : colors.neutral400}
           />
-          <Text
-            style={[s.dropzoneText, error ? s.dropzoneTextError : undefined]}
-          >
-            Appuyer pour choisir un fichier
-          </Text>
-          <Text style={s.dropzoneHint}>PDF, Image, Word, Texte</Text>
+          <View style={s.dropzoneContent}>
+            <Text
+              style={[s.dropzoneText, error ? s.dropzoneTextError : undefined]}
+            >
+              {placeholder || 'Appuyer pour choisir un fichier'}
+            </Text>
+            <Text style={s.dropzoneHint}>
+              {formatAcceptedTypes(acceptedTypes)}
+            </Text>
+          </View>
         </Pressable>
       )}
 
@@ -109,13 +154,15 @@ const s = StyleSheet.create({
   fileName: { fontSize: 14, fontWeight: '500', color: colors.neutral900 },
   fileSize: { fontSize: 12, color: colors.neutral500 },
   removeBtn: { padding: 4 },
+  dropzoneContent: { flex: 1, marginLeft: 12 },
   dropzone: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
+    padding: 16,
     borderWidth: 1,
     borderStyle: 'dashed',
     borderRadius: 8,
+    minHeight: 56,
   },
   dropzoneDefault: {
     borderColor: colors.neutral300,
@@ -126,8 +173,8 @@ const s = StyleSheet.create({
     backgroundColor: colors.error50,
   },
   dropzoneDisabled: { opacity: 0.5 },
-  dropzoneText: { marginTop: 8, fontSize: 14, color: colors.neutral500 },
+  dropzoneText: { fontSize: 14, color: colors.neutral500 },
   dropzoneTextError: { color: colors.error500 },
-  dropzoneHint: { marginTop: 4, fontSize: 12, color: colors.neutral400 },
+  dropzoneHint: { fontSize: 12, color: colors.neutral400 },
   errorText: { marginTop: 4, fontSize: 14, color: colors.error500 },
 });

@@ -37,6 +37,7 @@ export function StepFormField({
     rightIcon: RightIcon,
     options,
     editable: editableFn,
+    acceptedTypes,
   } = field;
 
   const isEditable = editableFn ? editableFn(formValues ?? {}) : !disabled;
@@ -115,6 +116,8 @@ export function StepFormField({
                 error={error?.message?.toString()}
                 disabled={!isEditable}
                 testID={testID}
+                placeholder={placeholder}
+                acceptedTypes={acceptedTypes}
               />
             );
           }

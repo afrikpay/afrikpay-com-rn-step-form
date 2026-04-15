@@ -40,6 +40,7 @@ export type FormField = {
   leftIcon?: LucideIcon;
   rightIcon?: LucideIcon;
   options?: Array<{ label: string; value: string }>;
+  acceptedTypes?: string[]; // pour le type file, par exemple ['image/*', 'application/pdf']
   showWhen?: {
     field: string;
     value?: any;

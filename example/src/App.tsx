@@ -244,6 +244,12 @@ export default function App() {
                       {
                         name: 'id_file',
                         label: 'Télécharger le document',
+                        placeholder: 'Choisir un fichier',
+                        acceptedTypes: [
+                          'image/*',
+                          'application/pdf',
+                          'text/plain',
+                        ], // Ajout du type PDF selon les besoins
                         type: 'file',
                       },
                       {

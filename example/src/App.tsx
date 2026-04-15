@@ -130,10 +130,10 @@ export default function App() {
                 }
                 steps={[
                   {
-                    title: 'Information Personnelles',
+                    title: 'Informations Personnelles',
                     showProgressBar: true, // Barre de progression
-                    showStepNumbers: false, // Pas de numéros de étape
-                    showStepCount: false, // Pas de compteur d'étapes
+                    showStepNumbers: true, // Pas de numéros de étape
+                    showStepCount: true, // Pas de compteur d'étapes
 
                     fields: [
                       {
@@ -417,12 +417,11 @@ export default function App() {
                     titleStyle: {
                       color: '#EF4444', // couleur du titre
                       fontWeight: '700', // poids du titre
-                      fontSize: 20, // taille du titre
-                      numberOfLines: 1, // nombre de lignes
+                      fontSize: 20, // taille du titre  true
                     },
-                    showProgressBar: true, // afficher la barre
+                    showProgressBar: false, // afficher la barre
                     showStepNumbers: true, // afficher les numéros
-                    showStepCount: false, // afficher le count
+                    showStepCount: true, // afficher le count
                     type: 'custom',
 
                     fields: getPaymentConfig(selectedMethod)?.requiresPin

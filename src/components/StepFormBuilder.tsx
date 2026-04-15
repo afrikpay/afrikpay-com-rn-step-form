@@ -48,9 +48,8 @@ export default function StepFormBuilder({
 
   // Options de progression pour l'étape actuelle
   const progressOptions = {
-    showProgress: step?.showProgress ?? true,
-    showProgressBar: step?.showProgressBar ?? true,
-    showStepNumbers: step?.showStepNumbers ?? true,
+    showProgressBar: step?.showProgressBar ?? false,
+    showStepNumbers: step?.showStepNumbers ?? false,
     showStepCount: step?.showStepCount ?? true,
     titleStyle: step?.titleStyle, // Style personnalisé du titre
   };

@@ -190,31 +190,19 @@ Vous verrez un formulaire avec deux étapes. Remplissez les champs et cliquez su
 
 C'est comme avoir un interrupteur pour chaque élément de progression ! Vous pouvez décider quoi montrer ou cacher pour chaque étape.
 
-#### Exemple : Cacher les numéros d'étapes mais garder la barre de progression
-
-```javascript
-{
-  title: 'Informations Personnelles',
-  showProgressBar: true,    // Garde la barre de progression
-  showStepNumbers: false,   // Cache les numéros (1, 2, 3...)
-  showStepCount: false,     // Cache le compteur (1/4, 2/4...)
-  fields: [
-    // ... vos champs
-  ],
-}
-```
-
 #### Exemple : Cacher toute la progression
 
 ```javascript
 {
   title: 'Étape Simple',
-  showProgress: false,      // Cache toute la section de progression
+  showStepCount: false,     // Cache le compteur d'étapes
   fields: [
     // ... vos champs
   ],
 }
 ```
+
+> **Note** : Par défaut, `showProgressBar` et `showStepNumbers` sont déjà `false`. Seul `showStepCount` est `true` par défaut.
 
 #### Exemple : Combiner les options
 
@@ -243,7 +231,7 @@ Maintenant vous pouvez changer complètement l'apparence du titre de chaque éta
     color: '#EF4444',        // Couleur rouge
     fontWeight: '700',       // Très gras
     fontSize: 20,            // Taille plus grande
-    numberOfLines: 1,        // Sur une seule ligne
+
   },
   fields: [
     // ... vos champs
@@ -260,7 +248,6 @@ Maintenant vous pouvez changer complètement l'apparence du titre de chaque éta
     color: '#6366F1',        // Bleu élégant
     fontWeight: '500',       // Moyennement gras
     fontSize: 18,            // Taille moyenne
-    numberOfLines: 2,        // Peut aller sur 2 lignes
   },
   fields: [
     // ... vos champs
@@ -328,7 +315,6 @@ const steps = [
       color: '#10B981', // Vert moderne
       fontWeight: '600', // Gras
       fontSize: 22, // Grande taille
-      numberOfLines: 1,
     },
     showProgressBar: true, // Barre visible
     showStepNumbers: false, // Pas de numéros
@@ -372,7 +358,6 @@ const steps = [
       color: '#3B82F6', // Bleu
       fontWeight: '500',
       fontSize: 20,
-      numberOfLines: 1,
     },
     showProgressBar: true, // Barre visible
     showStepNumbers: true, // Numéros visibles
@@ -410,7 +395,6 @@ const steps = [
       color: '#8B5CF6', // Violet
       fontWeight: '600',
       fontSize: 20,
-      numberOfLines: 1,
     },
     showProgressBar: false, // Pas de barre
     showStepNumbers: false, // Pas de numéros
@@ -463,7 +447,9 @@ const steps = [
   {
     // Étape 1 : Style minimaliste
     title: 'Informations de base',
-    showProgress: false, // Pas de progression du tout
+    showProgressBar: false, // Pas de barre
+    showStepNumbers: false, // Pas de numéros
+    showStepCount: false, // Pas de compteur
     titleStyle: {
       color: '#374151', // Gris foncé
       fontWeight: '400', // Normal
@@ -488,7 +474,6 @@ const steps = [
       color: '#DC2626', // Rouge vif
       fontWeight: '700', // Très gras
       fontSize: 24, // Très grand
-      numberOfLines: 1,
     },
     fields: [
       {
@@ -692,15 +677,13 @@ Voici les principales propriétés (props) que vous pouvez utiliser :
 
 Pour chaque étape, vous pouvez maintenant utiliser :
 
-- **showProgress** : `true/false` - Afficher/cacher toute la section de progression.
-- **showProgressBar** : `true/false` - Afficher/cacher la barre de progression.
-- **showStepNumbers** : `true/false` - Afficher/cacher les numéros d'étapes (1, 2, 3...).
-- **showStepCount** : `true/false` - Afficher/cacher le compteur (1/4, 2/4...).
+- **showProgressBar** : `true/false` - Afficher/cacher la barre de progression (par défaut : `false`).
+- **showStepNumbers** : `true/false` - Afficher/cacher les numéros d'étapes (1, 2, 3...) (par défaut : `false`).
+- **showStepCount** : `true/false` - Afficher/cacher le compteur (1/4, 2/4...) (par défaut : `true`).
 - **titleStyle** : Objet pour personnaliser le style du titre :
   - `fontSize` : Taille de la police
   - `fontWeight` : Poids (normal, bold, 100-900)
   - `color` : Couleur du texte
-  - `numberOfLines` : Nombre de lignes maximum
 
 Exemple avec validation personnalisée :
 
@@ -815,7 +798,6 @@ const steps = [
       color: '#10B981',
       fontWeight: '600',
       fontSize: 22,
-      numberOfLines: 1,
     },
     showProgressBar: true,
     showStepNumbers: false,
@@ -855,7 +837,6 @@ const steps = [
       color: '#3B82F6',
       fontWeight: '700',
       fontSize: 24,
-      numberOfLines: 1,
     },
     showProgressBar: true,
     showStepNumbers: true,
@@ -888,9 +869,10 @@ const steps = [
       color: '#6B7280',
       fontWeight: '400',
       fontSize: 18,
-      numberOfLines: 2,
     },
-    showProgress: false, // Juste le titre
+    showProgressBar: false, // Juste le titre
+    showStepNumbers: false,
+    showStepCount: false,
     type: 'custom',
     render: (data, goToNext, goToPrev) => (
       <View>
@@ -949,8 +931,9 @@ export default function FormulaireComplet() {
 
 ### Problème : La progression ne s'affiche pas.
 
-- Vérifiez que `showProgress` est `true` (ou non défini).
-- Assurez-vous que `showProgressBar`, `showStepNumbers`, et `showStepCount` ne sont pas tous `false`.
+- Par défaut, seule la barre de progression et les numéros d'étapes sont cachés.
+- Pour voir la progression, activez `showProgressBar` et/ou `showStepNumbers`.
+- Assurez-vous qu'au moins une option de progression est `true`.
 
 ### Problème : La validation en temps réel ne marche pas.
 
@@ -980,8 +963,8 @@ Bonne création d'apps magiques !
 
 **Récapitulatif rapide des nouvelles fonctionnalités :**
 
-1. **Progression optionnelle** : `showProgress`, `showProgressBar`, `showStepNumbers`, `showStepCount`
-2. **Style de titre personnalisé** : `titleStyle` avec `fontSize`, `fontWeight`, `color`, `numberOfLines`
+1. **Progression optionnelle** : `showProgressBar`, `showStepNumbers`, `showStepCount`
+2. **Style de titre personnalisé** : `titleStyle` avec `fontSize`, `fontWeight`, `color`
 3. **Validation en temps réel** : Automatic pendant la saisie
 4. **Blocage automatique** : Quand `maxLength` est atteint
 5. **Design compact** : Espaces optimisés automatiquement

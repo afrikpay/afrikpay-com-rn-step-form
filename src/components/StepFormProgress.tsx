@@ -11,7 +11,6 @@ type StepFormProgressProps = {
   steps: FormStep[];
   currentStep: number;
   testID?: string;
-  showProgress?: boolean;
   showProgressBar?: boolean;
   showStepNumbers?: boolean;
   showStepCount?: boolean;
@@ -31,7 +30,6 @@ type StepFormProgressProps = {
       | '800'
       | '900';
     color?: string;
-    numberOfLines?: number;
   };
 };
 
@@ -39,9 +37,8 @@ export function StepFormProgress({
   steps,
   currentStep,
   testID = 'step-form-progress',
-  showProgress = true,
-  showProgressBar = true,
-  showStepNumbers = true,
+  showProgressBar = false,
+  showStepNumbers = false,
   showStepCount = true,
   titleStyle,
 }: StepFormProgressProps) {
@@ -52,11 +49,6 @@ export function StepFormProgress({
   }));
 
   const step = steps[currentStep];
-
-  // Si toute la progression est masquée, ne rien afficher
-  if (!showProgress) {
-    return null;
-  }
 
   // Calculer l'espace en bas en fonction des éléments visibles
   const hasVisibleElements =
@@ -78,14 +70,7 @@ export function StepFormProgress({
             {currentStep + 1} / {steps.length}
           </Text>
         )}
-        {step?.title && (
-          <Text
-            style={[p.title, titleStyle]}
-            numberOfLines={titleStyle?.numberOfLines}
-          >
-            {step.title}
-          </Text>
-        )}
+        {step?.title && <Text style={[p.title, titleStyle]}>{step.title}</Text>}
         {step?.description && (
           <Text style={p.description}>{step.description}</Text>
         )}

@@ -63,7 +63,6 @@ export type FormStep = {
   isNextDisabled?: boolean | ((values: FormData) => boolean);
   buttonPosition?: 'center' | 'bottom' | 'bottom-raised';
   // Options d'affichage de la progression
-  showProgress?: boolean; // Afficher/cacher toute la section de progression
   showProgressBar?: boolean; // Afficher/cacher la barre de progression
   showStepNumbers?: boolean; // Afficher/cacher les numéros d'étapes (1, 2, 3...)
   showStepCount?: boolean; // Afficher/cacher le compteur (1/4, 2/4...)
@@ -83,7 +82,6 @@ export type FormStep = {
       | '800'
       | '900';
     color?: string;
-    numberOfLines?: number;
   };
 };
 

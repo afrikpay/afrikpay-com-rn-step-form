@@ -130,13 +130,27 @@ export default function App() {
                 }
                 steps={[
                   {
-                    title: 'Information Personnelles',
+                    title: 'Informations Personnelles',
+                    showProgressBar: true, // Barre de progression
+                    showStepNumbers: true, // Pas de numéros de étape
+                    showStepCount: true, // Pas de compteur d'étapes
+
                     fields: [
                       {
+                        name: 'gender',
+                        label: 'Genre',
+                        type: 'select',
+                        options: [
+                          { label: 'Masculin', value: 'male' },
+                          { label: 'Féminin', value: 'female' },
+                        ],
+                      },
+                      {
                         name: 'name',
-                        label: 'Nom',
+                        label: 'ou',
+                        placeholder: 'saisissez votre sexe',
                         type: 'text',
-                        validation: { required: 'Nom requis' },
+                        validation: { required: 'Sexe requis' },
                       },
                       {
                         name: 'age',
@@ -157,6 +171,9 @@ export default function App() {
 
                   {
                     title: 'Information Legales',
+                    showProgressBar: true, //barre de progression
+                    showStepNumbers: false, // Pas de numéros de étape
+                    showStepCount: false, // Pas de compteur d'étapes
                     fields: [
                       {
                         name: 'is_married',
@@ -202,7 +219,7 @@ export default function App() {
                   },
 
                   {
-                    title: 'Information Personnelles',
+                    title: 'Informations Personnelles',
                     fields: [
                       {
                         name: 'name',
@@ -397,6 +414,14 @@ export default function App() {
                   // ETAPE 5 (RECAP + SUBMIT AUTO)
                   {
                     title: 'Récapitulatif',
+                    titleStyle: {
+                      color: '#EF4444', // couleur du titre
+                      fontWeight: '700', // poids du titre
+                      fontSize: 20, // taille du titre  true
+                    },
+                    showProgressBar: false, // afficher la barre
+                    showStepNumbers: true, // afficher les numéros
+                    showStepCount: true, // afficher le count
                     type: 'custom',
 
                     fields: getPaymentConfig(selectedMethod)?.requiresPin
@@ -556,7 +581,7 @@ export default function App() {
                     },
                   },
                 ]}
-                defaultValues={{ name: 'ulrich', is_worker: true }}
+                defaultValues={{ name: '', is_worker: true }}
                 externalValues={{}}
                 onError={console.error}
                 onExternalValueChange={console.warn}

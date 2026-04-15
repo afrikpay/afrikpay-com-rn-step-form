@@ -62,6 +62,27 @@ export type FormStep = {
   onStepComplete?: (data: FormData) => Promise<FormData | void>;
   isNextDisabled?: boolean | ((values: FormData) => boolean);
   buttonPosition?: 'center' | 'bottom' | 'bottom-raised';
+  // Options d'affichage de la progression
+  showProgressBar?: boolean; // Afficher/cacher la barre de progression
+  showStepNumbers?: boolean; // Afficher/cacher les numéros d'étapes (1, 2, 3...)
+  showStepCount?: boolean; // Afficher/cacher le compteur (1/4, 2/4...)
+  // Style personnalisé du titre
+  titleStyle?: {
+    fontSize?: number;
+    fontWeight?:
+      | 'normal'
+      | 'bold'
+      | '100'
+      | '200'
+      | '300'
+      | '400'
+      | '500'
+      | '600'
+      | '700'
+      | '800'
+      | '900';
+    color?: string;
+  };
 };
 
 export type FormData = Record<string, any>;

@@ -11,12 +11,36 @@ type StepFormProgressProps = {
   steps: FormStep[];
   currentStep: number;
   testID?: string;
+  showProgressBar?: boolean;
+  showStepNumbers?: boolean;
+  showStepCount?: boolean;
+  // Props pour personnaliser le titre
+  titleStyle?: {
+    fontSize?: number;
+    fontWeight?:
+      | 'normal'
+      | 'bold'
+      | '100'
+      | '200'
+      | '300'
+      | '400'
+      | '500'
+      | '600'
+      | '700'
+      | '800'
+      | '900';
+    color?: string;
+  };
 };
 
 export function StepFormProgress({
   steps,
   currentStep,
   testID = 'step-form-progress',
+  showProgressBar = false,
+  showStepNumbers = false,
+  showStepCount = true,
+  titleStyle,
 }: StepFormProgressProps) {
   const progress = (currentStep + 1) / steps.length;
 
@@ -26,73 +50,93 @@ export function StepFormProgress({
 
   const step = steps[currentStep];
 
+  // Calculer l'espace en bas en fonction des éléments visibles
+  const hasVisibleElements =
+    showStepCount || showProgressBar || showStepNumbers;
+  const marginBottom = hasVisibleElements ? 2 : 8; // Réduit si seulement le titre est visible
+
+  // <View style={[p.header, { marginBottom: showProgressBar ? 16 : 8 }]}>
+
   return (
-    <View testID={testID} style={p.container}>
-      <View style={p.header}>
-        <Text style={p.stepCount}>
-          {currentStep + 1} / {steps.length}
-        </Text>
-        {step?.title && <Text style={p.title}>{step.title}</Text>}
+    <View testID={testID} style={[p.container, { marginBottom }]}>
+      <View
+        style={[
+          p.header,
+          showProgressBar ? p.headerMarginNormal : p.headerMarginCompact,
+        ]}
+      >
+        {showStepCount && (
+          <Text style={p.stepCount}>
+            {currentStep + 1} / {steps.length}
+          </Text>
+        )}
+        {step?.title && <Text style={[p.title, titleStyle]}>{step.title}</Text>}
         {step?.description && (
           <Text style={p.description}>{step.description}</Text>
         )}
       </View>
 
-      <View style={p.barTrack}>
-        <Animated.View style={[p.barFill, progressStyle]} />
-      </View>
+      {showProgressBar && (
+        <View style={p.barTrack}>
+          <Animated.View style={[p.barFill, progressStyle]} />
+        </View>
+      )}
 
-      <View style={p.dotsRow}>
-        {steps.map((st, index) => {
-          const isCompleted = index < currentStep;
-          const isCurrent = index === currentStep;
-          const isLast = index === steps.length - 1;
+      {showStepNumbers && (
+        <View style={p.dotsRow}>
+          {steps.map((st, index) => {
+            const isCompleted = index < currentStep;
+            const isCurrent = index === currentStep;
+            const isLast = index === steps.length - 1;
 
-          return (
-            <View key={index} style={p.dotGroup}>
-              <View style={p.dotCenter}>
-                <View
-                  style={[
-                    p.dot,
-                    isCompleted && p.dotCompleted,
-                    isCurrent && p.dotCurrent,
-                    !isCompleted && !isCurrent && p.dotInactive,
-                  ]}
-                >
-                  {isCompleted ? (
-                    <Check size={16} color={colors.white} />
-                  ) : (
-                    <Text
-                      style={[
-                        p.dotNum,
-                        isCurrent ? p.dotNumCurrent : p.dotNumInactive,
-                      ]}
-                    >
-                      {index + 1}
-                    </Text>
-                  )}
-                </View>
-                {st.title ? (
-                  <Text
-                    style={[p.dotLabel, isCurrent && p.dotLabelCurrent]}
-                    numberOfLines={1}
+            return (
+              <View key={index} style={p.dotGroup}>
+                <View style={p.dotCenter}>
+                  <View
+                    style={[
+                      p.dot,
+                      isCompleted && p.dotCompleted,
+                      isCurrent && p.dotCurrent,
+                      !isCompleted && !isCurrent && p.dotInactive,
+                    ]}
                   >
-                    {st.title}
-                  </Text>
-                ) : null}
+                    {isCompleted ? (
+                      <Check size={14} color={colors.white} />
+                    ) : (
+                      <Text
+                        style={[
+                          p.dotNum,
+                          isCurrent ? p.dotNumCurrent : p.dotNumInactive,
+                        ]}
+                      >
+                        {index + 1}
+                      </Text>
+                    )}
+                  </View>
+                  {st.title ? (
+                    <Text
+                      style={[p.dotLabel, isCurrent && p.dotLabelCurrent]}
+                      numberOfLines={1}
+                    >
+                      {st.title}
+                    </Text>
+                  ) : null}
+                </View>
+                {!isLast && (
+                  <View
+                    style={[
+                      p.connector,
+                      index < currentStep
+                        ? p.connectorDone
+                        : p.connectorPending,
+                    ]}
+                  />
+                )}
               </View>
-              {!isLast && (
-                <View
-                  style={[
-                    p.connector,
-                    index < currentStep ? p.connectorDone : p.connectorPending,
-                  ]}
-                />
-              )}
-            </View>
-          );
-        })}
-      </View>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 }
@@ -100,6 +144,12 @@ export function StepFormProgress({
 const p = StyleSheet.create({
   container: { marginBottom: 24 },
   header: { marginBottom: 16 },
+  headerMarginNormal: {
+    marginBottom: 16,
+  },
+  headerMarginCompact: {
+    marginBottom: 8,
+  },
   stepCount: { fontSize: 14, color: colors.neutral500, marginBottom: 4 },
   title: {
     fontSize: 24,
@@ -128,16 +178,16 @@ const p = StyleSheet.create({
   dotGroup: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   dotCenter: { alignItems: 'center' },
   dot: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   dotCompleted: { backgroundColor: colors.success600 },
   dotCurrent: { backgroundColor: colors.primary700 },
   dotInactive: { backgroundColor: colors.neutral300 },
-  dotNum: { fontSize: 14, fontWeight: '600' },
+  dotNum: { fontSize: 10, fontWeight: '500' },
   dotNumCurrent: { color: colors.white },
   dotNumInactive: { color: colors.neutral500 },
   dotLabel: {

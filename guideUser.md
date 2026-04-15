@@ -642,12 +642,41 @@ Voici une liste de tous les types de champs que vous pouvez utiliser, avec des e
 - **file** : Télécharger un fichier.
   ```javascript
   {
-    name: 'photo',
-    label: 'Photo',
+    name: 'document',
+    label: 'Télécharger le document',
     type: 'file',
-    validation: { required: 'Photo requise' },
+    placeholder: 'Choisir un fichier', // Texte personnalisé pour le bouton
+    acceptedTypes: ['application/pdf'], // Types de fichiers acceptés
+    validation: { required: 'Document requis' },
   }
   ```
+
+### Propriétés Spécifiques au Champ `file`
+
+Pour le champ de type `file`, vous pouvez utiliser ces propriétés supplémentaires :
+
+- **placeholder** : Texte personnalisé pour le bouton de sélection (par défaut : "Appuyer pour choisir un fichier").
+- **acceptedTypes** : Tableau des types MIME acceptés (par défaut : `['image/*', 'application/pdf', 'application/msword', 'text/plain']`).
+
+#### Exemples de `acceptedTypes` :
+
+```javascript
+// Uniquement les PDF
+acceptedTypes: ['application/pdf'];
+
+// Images et PDF
+acceptedTypes: ['image/*', 'application/pdf'];
+
+// Tous les types de documents
+acceptedTypes: [
+  'image/*',
+  'application/pdf',
+  'application/msword',
+  'text/plain',
+];
+```
+
+Les types de fichiers acceptés sont automatiquement affichés sous forme de texte (ex: "PDF, Image").
 
 Pour chaque champ, vous pouvez ajouter :
 

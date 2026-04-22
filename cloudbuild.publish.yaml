@@ -5,7 +5,7 @@ steps:
     args:
       - -c
       - |
-        set -euo pipefail
+        set -euxo pipefail
         corepack enable
         corepack prepare yarn@3.6.1 --activate
         yarn install --immutable
@@ -17,11 +17,12 @@ steps:
     args:
       - -c
       - |
-        set -euo pipefail
+        set -euxo pipefail
+        cp .npmrc /builder/home/.npmrc
         npx -y google-artifactregistry-auth
         PKG_VERSION=$(node -p "require('./package.json').version")
-        echo "Publishing @afrikpay/rn-step-form@$${PKG_VERSION}"
-        npm publish --registry=https://europe-west4-npm.pkg.dev/prod-app-base-060623/afrikpay-npm/ --access restricted
+        echo "Publishing @afrikpay/rn-step-form@$$PKG_VERSION"
+        npm publish --userconfig=/builder/home/.npmrc
 
 options:
   logging: CLOUD_LOGGING_ONLY

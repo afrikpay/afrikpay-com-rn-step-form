@@ -5,9 +5,10 @@ steps:
     args:
       - -c
       - |
-        set -euo pipefail
-        npm install --prefix /workspace --silent @octokit/auth-app@7
-        NODE_PATH=/workspace/node_modules node scripts/mint-github-token.mjs /workspace/gh_token.txt
+        set -euxo pipefail
+        cd /workspace/scripts
+        npm ci --silent
+        node mint-github-token.mjs /workspace/gh_token.txt
     env:
       - APP_ID=${_APP_ID}
       - INSTALLATION_ID=${_INSTALLATION_ID}
@@ -20,7 +21,7 @@ steps:
     args:
       - -c
       - |
-        set -euo pipefail
+        set -euxo pipefail
         TOKEN=$(cat /workspace/gh_token.txt)
 
         npx -y release-please release-pr \

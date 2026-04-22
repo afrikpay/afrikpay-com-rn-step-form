@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.1](https://github.com/afrikpay/afrikpay-com-rn-step-form/compare/rn-step-form-v3.0.0...rn-step-form-v3.0.1) (2026-04-22)
+
+
+### Bug Fixes
+
+* **ci:** commit .npmrc + publish uses it ([49e6c48](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/49e6c482830ff1b9fad4510cadead825ad178de3))
+* **ci:** commit .npmrc + publish uses it ([bf26e7e](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/bf26e7e211f8441c5cb114c7f7ea2fc693f430c8))
+
 ## [3.0.0](https://github.com/afrikpay/afrikpay-com-rn-step-form/compare/rn-step-form-v2.0.5...rn-step-form-v3.0.0) (2026-04-22)
 
 

@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -320,10 +321,137 @@ export default function App() {
                   },
 
                   {
+                    title: 'Sélectionner une Formule',
+                    type: 'custom',
+                    fields: [], // Champ vide obligatoire pour le type custom
+                    render: (formData, _, __, setValue) => {
+                      const formules = [
+                        {
+                          id: 'basic',
+                          name: 'Formule Basic',
+                          price: '9.99$',
+                          features: ['Feature 1', 'Feature 2'],
+                        },
+                        {
+                          id: 'premium',
+                          name: 'Formule Premium',
+                          price: '19.99$',
+                          features: ['Feature 1', 'Feature 2', 'Feature 3'],
+                        },
+                        {
+                          id: 'pro',
+                          name: 'Formule Pro',
+                          price: '29.99$',
+                          features: ['All features', 'Priority support'],
+                        },
+                      ];
+
+                      const selectedFormule = formData.selectedFormule;
+
+                      const selectFormule = (formuleId: string) => {
+                        setValue('selectedFormule', formuleId);
+                      };
+
+                      return (
+                        <View style={{ padding: 20 }}>
+                          <Text
+                            style={{
+                              fontSize: 18,
+                              fontWeight: 'bold',
+                              marginBottom: 20,
+                            }}
+                          >
+                            Choisissez votre formule
+                          </Text>
+
+                          {formules.map((formule) => (
+                            <TouchableOpacity
+                              key={formule.id}
+                              style={[
+                                {
+                                  backgroundColor:
+                                    selectedFormule === formule.id
+                                      ? '#007AFF'
+                                      : '#f5f5f5',
+                                  padding: 15,
+                                  borderRadius: 8,
+                                  marginBottom: 10,
+                                  borderWidth: 1,
+                                  borderColor:
+                                    selectedFormule === formule.id
+                                      ? '#007AFF'
+                                      : '#ddd',
+                                },
+                              ]}
+                              onPress={() => selectFormule(formule.id)}
+                            >
+                              <Text
+                                style={[
+                                  { fontSize: 16, fontWeight: 'bold' },
+                                  selectedFormule === formule.id
+                                    ? { color: 'white' }
+                                    : { color: '#333' },
+                                ]}
+                              >
+                                {formule.name}
+                              </Text>
+                              <Text
+                                style={[
+                                  { fontSize: 14, marginTop: 5 },
+                                  selectedFormule === formule.id
+                                    ? { color: '#f0f0f0' }
+                                    : { color: '#666' },
+                                ]}
+                              >
+                                {formule.price}
+                              </Text>
+                              {formule.features.map((feature, index) => (
+                                <Text
+                                  key={index}
+                                  style={[
+                                    { fontSize: 12, marginTop: 2 },
+                                    selectedFormule === formule.id
+                                      ? { color: '#f0f0f0' }
+                                      : { color: '#888' },
+                                  ]}
+                                >
+                                  {'\u2022 '} {feature}
+                                </Text>
+                              ))}
+                            </TouchableOpacity>
+                          ))}
+
+                          {selectedFormule && (
+                            <View
+                              style={{
+                                marginTop: 20,
+                                padding: 15,
+                                backgroundColor: '#e8f5e8',
+                                borderRadius: 8,
+                              }}
+                            >
+                              <Text
+                                style={{ color: '#2d7a2d', fontWeight: 'bold' }}
+                              >
+                                Formule sélectionnée :{' '}
+                                {
+                                  formules.find((f) => f.id === selectedFormule)
+                                    ?.name
+                                }
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                      );
+                    },
+                    isNextDisabled: (values) => !values.selectedFormule,
+                  },
+
+                  {
                     title: 'Informations Personnelles',
                     fields: [
                       {
-                        name: 'email', // Changé 'name' par 'email' pour la cohérence
+                        name: 'email', // Changé 'name' par 'email' pour la cohérence roberto12#
                         label: 'Email',
                         type: 'email',
                         validation: {
@@ -462,6 +590,8 @@ export default function App() {
                                 message: '9 chiffres maximum',
                               },
                             },
+                            //leftIcon: Home,
+                            //rightIcon: Calendar
                           },
                         ],
 

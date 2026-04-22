@@ -903,7 +903,7 @@ const steps = [
     showStepNumbers: false,
     showStepCount: false,
     type: 'custom',
-    render: (data, goToNext, goToPrev) => (
+    render: (data, goToNext, goToPrev, setValue) => (
       <View>
         <Text>Vérifiez vos informations :</Text>
         <Text>Nom : {data.nom}</Text>
@@ -929,6 +929,42 @@ export default function FormulaireComplet() {
   );
 }
 ```
+
+### Utilisation de `setValue` dans les Composants Custom
+
+Pour les étapes de type `custom`, vous pouvez maintenant utiliser `setValue` pour mettre à jour les valeurs du formulaire depuis votre composant custom. C'est essentiel pour que `isNextDisabled` fonctionne correctement.
+
+```javascript
+{
+  title: 'Calculateur Personnalisé',
+  type: 'custom',
+  render: (data, goToNext, goToPrev, setValue) => {
+    const updateCalculation = (result) => {
+      // Met à jour la valeur dans le formulaire
+      setValue('calculResult', result);
+      // isNextDisabled sera réévalué automatiquement
+    };
+
+    return (
+      <View>
+        <Text>Résultat : {data.calculResult || 'Non calculé'}</Text>
+        <Button
+          title="Calculer"
+          onPress={() => updateCalculation(42)}
+        />
+        <Button title="Suivant" onPress={goToNext} />
+      </View>
+    );
+  },
+  isNextDisabled: (values) => !values.calculResult, // Désactivé tant que pas de résultat
+}
+```
+
+#### Pourquoi `setValue` est important ?
+
+- **Synchronisation** : Garde le state du StepForm synchronisé avec votre composant custom
+- **Re-validation** : `isNextDisabled` est réévalué automatiquement quand les valeurs changent
+- **Accès aux données** : Les valeurs mises à jour sont disponibles dans les autres étapes
 
 ## Dépannage : Que Faire si Ça Ne Marche Pas ?
 

@@ -15,7 +15,7 @@ steps:
     secretEnv:
       - APP_PRIVATE_KEY
 
-  - id: release-please
+  - id: release-pr
     name: node:20
     entrypoint: bash
     args:
@@ -29,6 +29,48 @@ steps:
           --repo-url=afrikpay/afrikpay-com-rn-step-form \
           --config-file=release-please-config.json \
           --manifest-file=.release-please-manifest.json
+
+  - id: auto-merge
+    name: node:20
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euxo pipefail
+        TOKEN=$(cat /workspace/gh_token.txt)
+        REPO="afrikpay/afrikpay-com-rn-step-form"
+
+        PR=$(curl -sf -H "Authorization: token $$TOKEN" \
+              "https://api.github.com/repos/$$REPO/pulls?state=open&per_page=100" \
+              | node -e "
+                const prs = JSON.parse(require('fs').readFileSync(0));
+                const p = prs.find(p => p.labels.some(l => l.name === 'autorelease: pending'));
+                process.stdout.write(p ? String(p.number) : '');
+              ")
+
+        if [ -z "$$PR" ]; then
+          echo "No release PR pending — skipping auto-merge"
+          exit 0
+        fi
+
+        echo "Auto-merging release PR #$$PR"
+        curl -sfS -X PUT \
+          -H "Authorization: token $$TOKEN" \
+          -H "Accept: application/vnd.github+json" \
+          "https://api.github.com/repos/$$REPO/pulls/$$PR/merge" \
+          -d '{"merge_method":"squash"}'
+        echo
+        echo "Merged."
+        sleep 5
+
+  - id: github-release
+    name: node:20
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euxo pipefail
+        TOKEN=$(cat /workspace/gh_token.txt)
 
         npx -y release-please github-release \
           --token="$$TOKEN" \

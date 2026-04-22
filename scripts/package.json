@@ -1,0 +1,9 @@
+{
+  "name": "rn-step-form-ci-scripts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@octokit/auth-app": "^7.0.0"
+  }
+}

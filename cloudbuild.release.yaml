@@ -6,22 +6,8 @@ steps:
       - -c
       - |
         set -euo pipefail
-        mkdir -p /workspace/node_modules
         npm install --prefix /workspace --silent @octokit/auth-app@7
-        cat > /workspace/mint-token.mjs <<'EOF'
-        import { createAppAuth } from '@octokit/auth-app';
-        import { writeFileSync } from 'fs';
-
-        const auth = createAppAuth({
-          appId: process.env.APP_ID,
-          privateKey: process.env.APP_PRIVATE_KEY,
-          installationId: process.env.INSTALLATION_ID,
-        });
-        const { token } = await auth({ type: 'installation' });
-        writeFileSync('/workspace/gh_token.txt', token, { mode: 0o600 });
-        console.log('Token minted (expires in 1h)');
-        EOF
-        node /workspace/mint-token.mjs
+        NODE_PATH=/workspace/node_modules node scripts/mint-github-token.mjs /workspace/gh_token.txt
     env:
       - APP_ID=${_APP_ID}
       - INSTALLATION_ID=${_INSTALLATION_ID}

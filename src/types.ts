@@ -58,7 +58,8 @@ export type FormStep = {
   render?: (
     data: FormData,
     goToNext: () => void,
-    goToPrev: () => void
+    goToPrev: () => void,
+    setValue: (name: string, value: any) => void
   ) => React.ReactNode;
   onStepComplete?: (data: FormData) => Promise<FormData | void>;
   isNextDisabled?: boolean | ((values: FormData) => boolean);

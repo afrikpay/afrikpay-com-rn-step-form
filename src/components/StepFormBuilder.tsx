@@ -181,7 +181,7 @@ export default function StepFormBuilder({
         >
           {step?.type === 'custom' && step.render ? (
             <>
-              {step.render(getValues(), goToNext, goToPrev)}
+              {step.render(getValues(), goToNext, goToPrev, setValue)}
               {visibleFields.length > 0 && renderFields()}
             </>
           ) : (

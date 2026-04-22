@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.0](https://github.com/afrikpay/afrikpay-com-rn-step-form/compare/rn-step-form-v3.0.1...rn-step-form-v3.1.0) (2026-04-22)
+
+
+### Features
+
+* **ci:** auto-merge Release Please PR ([6ef61f5](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/6ef61f5c77893e6e1cf4117ffefd1eb2beb5ace6))
+* **ci:** auto-merge Release Please PR ([bca2f5e](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/bca2f5ecf47f43b67c4c3fb527aea25d75b51936))
+
 ## [3.0.1](https://github.com/afrikpay/afrikpay-com-rn-step-form/compare/rn-step-form-v3.0.0...rn-step-form-v3.0.1) (2026-04-22)
 
 

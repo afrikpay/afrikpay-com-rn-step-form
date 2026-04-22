@@ -1,0 +1,30 @@
+steps:
+  - id: release-please
+    name: node:20
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+
+        npx -y release-please release-pr \
+          --token="$$GITHUB_TOKEN" \
+          --repo-url=afrikpay/afrikpay-com-rn-step-form \
+          --config-file=release-please-config.json \
+          --manifest-file=.release-please-manifest.json
+
+        npx -y release-please github-release \
+          --token="$$GITHUB_TOKEN" \
+          --repo-url=afrikpay/afrikpay-com-rn-step-form \
+          --config-file=release-please-config.json \
+          --manifest-file=.release-please-manifest.json
+    secretEnv:
+      - GITHUB_TOKEN
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/prod-app-base-060623/secrets/release-please-github-token/versions/latest
+      env: GITHUB_TOKEN
+
+options:
+  logging: CLOUD_LOGGING_ONLY

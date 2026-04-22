@@ -1,0 +1,27 @@
+steps:
+  - id: install-build
+    name: node:20
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        corepack enable
+        corepack prepare yarn@3.6.1 --activate
+        yarn install --immutable
+        yarn prepare
+
+  - id: publish
+    name: node:20
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        npx -y google-artifactregistry-auth
+        PKG_VERSION=$(node -p "require('./package.json').version")
+        echo "Publishing @afrikpay/rn-step-form@$${PKG_VERSION}"
+        npm publish --registry=https://europe-west4-npm.pkg.dev/prod-app-base-060623/afrikpay-npm/ --access restricted
+
+options:
+  logging: CLOUD_LOGGING_ONLY

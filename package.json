@@ -40,8 +40,7 @@
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "clean": "del-cli lib",
     "build": "tsc",
-    "prepare": "bob build",
-    "release": "release-it"
+    "prepare": "bob build"
   },
   "keywords": [
     "react-native",
@@ -72,7 +71,6 @@
     "@react-native-community/datetimepicker": "6.7.3",
     "@react-native/eslint-config": "^0.78.0",
     "@react-native/eslint-plugin": "^0.84.1",
-    "@release-it/conventional-changelog": "^9.0.2",
     "@types/jest": "^29.5.5",
     "@types/react": "~18.0.27",
     "@typescript-eslint/eslint-plugin": "^8.57.1",
@@ -98,7 +96,6 @@
     "react-native-gesture-handler": "^2.30.1",
     "react-native-reanimated": "~2.14.4",
     "react-native-svg": "^15.15.4",
-    "release-it": "^17.10.0",
     "typescript": "5.2.2"
   },
   "peerDependencies": {
@@ -136,25 +133,6 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "release-it": {
-    "git": {
-      "commitMessage": "chore: release ${version}",
-      "tagName": "v${version}"
-    },
-    "npm": {
-      "publish": false
-    },
-    "github": {
-      "release": true
-    },
-    "plugins": {
-      "@release-it/conventional-changelog": {
-        "preset": {
-          "name": "angular"
-        }
-      }
-    }
   },
   "prettier": {
     "quoteProps": "consistent",

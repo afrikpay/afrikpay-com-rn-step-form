@@ -4,11 +4,22 @@ A react native step form
 
 ## Installation
 
+Le package est publie sur Artifact Registry Afrikpay. Configure d'abord ton `.npmrc` :
+
+```
+@afrikpay:registry=https://europe-west4-npm.pkg.dev/prod-app-base-060623/afrikpay-npm/
+//europe-west4-npm.pkg.dev/prod-app-base-060623/afrikpay-npm/:always-auth=true
+```
+
+Authentifie-toi puis installe :
+
 ```sh
+npx google-artifactregistry-auth
 npm install @afrikpay/rn-step-form
 ```
 
 ```sh
+npx google-artifactregistry-auth
 yarn add @afrikpay/rn-step-form
 ```
 

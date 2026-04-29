@@ -8,6 +8,7 @@ export const colors = {
   success600: '#059669',
   error50: '#FEF2F2',
   error500: '#EF4444',
+  warning500: '#cf906eff',
   neutral50: '#FAFAFA',
   neutral100: '#F5F5F5',
   neutral200: '#E5E5E5',

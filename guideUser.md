@@ -701,6 +701,11 @@ Voici les principales propriétés (props) que vous pouvez utiliser :
 - **backLabel** : Texte du bouton "Retour" (par défaut "Retour").
 - **submitLabel** : Texte du bouton "Valider" (par défaut "Valider").
 - **resolver** : Pour une validation personnalisée avec Zod.
+- **flowOptions** : Options globales de progression et de style (nouveau !) :
+  - `showProgressBar` : Affiche/cache la barre de progression pour toutes les étapes
+  - `showStepNumbers` : Affiche/cache les numéros d'étapes pour toutes les étapes
+  - `showStepCount` : Affiche/cache le compteur d'étapes pour toutes les étapes
+  - `titleStyle` : Style par défaut pour tous les titres d'étapes
 
 ### Nouvelles Propriétés des Étapes
 
@@ -713,6 +718,126 @@ Pour chaque étape, vous pouvez maintenant utiliser :
   - `fontSize` : Taille de la police
   - `fontWeight` : Poids (normal, bold, 100-900)
   - `color` : Couleur du texte
+
+### Nouveauté : Options de Progression Globales (flowOptions)
+
+Vous pouvez maintenant définir des options de progression globales qui s'appliquent à toutes les étapes du formulaire. C'est comme avoir un chef d'orchestre qui décide de la musique pour tout le spectacle !
+
+#### Syntaxe des flowOptions
+
+```javascript
+const progressOptions = {
+  showProgressBar: flowOptions?.showProgressBar ?? step?.showProgressBar ?? false,
+  showStepNumbers: flowOptions?.showStepNumbers ?? step?.showStepNumbers ?? false,
+  showStepCount: flowOptions?.showStepCount ?? step?.showStepCount ?? true,
+  titleStyle: flowOptions?.titleStyle ?? step?.titleStyle,
+};
+```
+
+#### Comment utiliser flowOptions
+
+```javascript
+<StepFormBuilder
+  steps={steps}
+  onSubmit={handleSubmit}
+  flowOptions={{
+    showProgressBar: true,        // Barre visible pour toutes les étapes
+    showStepNumbers: true,         // Numéros visibles pour toutes les étapes
+    showStepCount: true,           // Compteur visible pour toutes les étapes
+    titleStyle: {                  // Style par défaut pour tous les titres
+      color: '#1D4ED8',
+      fontWeight: '600',
+      fontSize: 20,
+    },
+  }}
+/>
+```
+
+#### Priorité des Options
+
+L'ordre de priorité est le suivant :
+1. **flowOptions** (le plus prioritaire)
+2. **Options de l'étape individuelle** (step.showProgressBar, etc.)
+3. **Valeurs par défaut** (le moins prioritaire)
+
+Cela signifie que :
+- Si vous définissez `flowOptions.showProgressBar = true`, toutes les étapes auront une barre de progression
+- Si une étape spécifique a `showProgressBar: false`, elle écrasera la valeur globale
+- Si rien n'est défini, les valeurs par défaut s'appliquent
+
+#### Exemple Complet avec Priorités
+
+```javascript
+const steps = [
+  {
+    title: 'Étape 1',
+    // Cette étape écrase les options globales pour la barre
+    showProgressBar: false, 
+    fields: [...],
+  },
+  {
+    title: 'Étape 2',
+    // Cette étape utilise les options globales (pas de showProgressBar défini)
+    fields: [...],
+  },
+  {
+    title: 'Étape 3',
+    // Cette étape écrase le style du titre global
+    titleStyle: {
+      color: '#EF4444',  // Rouge au lieu du bleu global
+    },
+    fields: [...],
+  },
+];
+
+<StepFormBuilder
+  steps={steps}
+  onSubmit={handleSubmit}
+  flowOptions={{
+    showProgressBar: true,    // S'applique à l'étape 2 et 3, mais pas à 1
+    showStepNumbers: true,     // S'applique à toutes les étapes
+    titleStyle: {
+      color: '#1D4ED8',        // Bleu pour l'étape 2, rouge pour l'étape 3
+      fontWeight: '600',
+      fontSize: 20,
+    },
+  }}
+/>
+```
+
+### Nouveauté : Couleurs d'Erreur Personnalisées
+
+La librairie utilise maintenant une nouvelle couleur d'erreur plus douce et personnalisable !
+
+#### Couleurs d'Erreur Disponibles
+
+- **warning500** (`#cf906eff`) : Nouvelle couleur orange/ambre pour les erreurs
+- **error500** (`#EF4444`) : Couleur rouge classique (toujours disponible)
+
+#### Comment Personnaliser les Couleurs
+
+Vous pouvez modifier les couleurs dans le fichier `tokens.ts` :
+
+```javascript
+export const colors = {
+  // ... autres couleurs
+  warning500: '#cf906eff',  // Couleur actuelle des erreurs
+  error500: '#EF4444',      // Rouge classique si vous préférez
+  // ... autres couleurs
+};
+```
+
+#### Pourquoi cette Nouvelle Couleur ?
+
+- **Plus douce** : Moins agressive que le rouge vif
+- **Plus accessible** : Meilleure lisibilité pour tous les utilisateurs
+- **Moderne** : S'aligne avec les tendances UX actuelles
+- **Professionnelle** : Convient mieux aux applications d'entreprise
+
+Les champs de saisie invalides auront automatiquement cette nouvelle couleur orange pour :
+- La bordure du champ
+- Le texte d'erreur
+- Les indicateurs visuels d'erreur
 
 Exemple avec validation personnalisée :
 
@@ -816,7 +941,9 @@ import { colors } from '@afrikpay/rn-step-form/tokens';
 
 ## Étape 10 : Combiner Toutes les Fonctionnalités
 
-Voici un exemple complet qui combine toutes les nouvelles fonctionnalités :
+### Exemple Complet avec flowOptions et Nouvelles Fonctionnalités
+
+Voici un exemple complet qui combine toutes les nouvelles fonctionnalités, y compris flowOptions :
 
 ```javascript
 const steps = [
@@ -925,6 +1052,121 @@ export default function FormulaireComplet() {
       nextLabel="Continuer"
       backLabel="Modifier"
       submitLabel="Valider"
+      flowOptions={{
+        // Style global pour toutes les étapes qui n'ont pas de style spécifique
+        showProgressBar: true,
+        showStepNumbers: true,
+        showStepCount: true,
+        titleStyle: {
+          color: '#6366F1',
+          fontWeight: '500',
+          fontSize: 20,
+        },
+      }}
+    />
+  );
+}
+```
+
+### Exemple : Formulaire d'Entreprise avec flowOptions
+
+Voici un exemple plus réalique pour une application d'entreprise :
+
+```javascript
+const steps = [
+  {
+    title: 'Informations de l\'Entreprise',
+    // Utilise le style global défini dans flowOptions
+    fields: [
+      {
+        name: 'nom_entreprise',
+        label: 'Nom de l\'entreprise',
+        type: 'text',
+        validation: { required: 'Nom requis' },
+      },
+      {
+        name: 'siret',
+        label: 'Numéro SIRET',
+        type: 'text',
+        validation: {
+          required: 'SIRET requis',
+          pattern: {
+            value: /^[0-9]{14}$/,
+            message: 'Format SIRET invalide (14 chiffres)',
+          },
+        },
+      },
+    ],
+  },
+  {
+    title: 'Contact Principal',
+    // Écrase le style global pour cette étape
+    titleStyle: {
+      color: '#059669', // Vert pour cette étape
+      fontWeight: '700',
+      fontSize: 22,
+    },
+    fields: [
+      {
+        name: 'contact_nom',
+        label: 'Nom du contact',
+        type: 'text',
+        validation: { required: 'Nom requis' },
+      },
+      {
+        name: 'contact_email',
+        label: 'Email professionnel',
+        type: 'email',
+        validation: {
+          required: 'Email requis',
+          pattern: {
+            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+            message: 'Format email invalide',
+          },
+        },
+      },
+    ],
+  },
+  {
+    title: 'Services',
+    // Cache la barre de progression juste pour cette étape
+    showProgressBar: false,
+    fields: [
+      {
+        name: 'services',
+        label: 'Services souhaités',
+        type: 'select',
+        options: [
+          { label: 'Consulting', value: 'consulting' },
+          { label: 'Développement', value: 'developpement' },
+          { label: 'Formation', value: 'formation' },
+          { label: 'Maintenance', value: 'maintenance' },
+        ],
+        validation: { required: 'Sélectionnez un service' },
+      },
+    ],
+  },
+];
+
+export default function EntrepriseForm() {
+  return (
+    <StepFormBuilder
+      steps={steps}
+      onSubmit={handleSubmit}
+      flowOptions={{
+        // Configuration globale
+        showProgressBar: true,        // Visible pour les étapes 1 et 3
+        showStepNumbers: true,         // Visible pour toutes les étapes
+        showStepCount: true,           // Visible pour toutes les étapes
+        titleStyle: {
+          color: '#1D4ED8',            // Bleu par défaut
+          fontWeight: '600',
+          fontSize: 20,
+        },
+      }}
+      nextLabel="Suivant"
+      backLabel="Précédent"
+      submitLabel="Envoyer la demande"
     />
   );
 }
@@ -1005,6 +1247,30 @@ Pour les étapes de type `custom`, vous pouvez maintenant utiliser `setValue` po
 - La validation en temps réel est automatique avec cette version.
 - Si vous ne voyez pas les erreurs, vérifiez votre configuration `react-hook-form`.
 
+### Problème : flowOptions ne s'appliquent pas.
+
+- Vérifiez que `flowOptions` est bien un objet valide dans le `StepFormBuilder`.
+- Les options individuelles des étapes écrasent les options globales.
+- Assurez-vous que la syntaxe est correcte : `flowOptions={{ showProgressBar: true }}`.
+
+### Problème : Les couleurs d'erreur ne changent pas.
+
+- Vérifiez que vous avez bien modifié le fichier `tokens.ts`.
+- Redémarrez votre application après avoir changé les couleurs.
+- Assurez-vous d'utiliser `colors.warning500` pour la nouvelle couleur orange.
+
+### Problème : La barre de progression ne s'affiche pas avec flowOptions.
+
+- Par défaut, `showProgressBar` est `false`. Mettez-le à `true` dans `flowOptions`.
+- Vérifiez qu'une étape spécifique n'écrase pas la valeur globale avec `showProgressBar: false`.
+- Assurez-vous que votre formulaire a plusieurs étapes.
+
+### Problème : Le style du titre ne s'applique pas correctement.
+
+- `titleStyle` dans `flowOptions` s'applique seulement si l'étape n'a pas son propre `titleStyle`.
+- Vérifiez que les couleurs sont au bon format (`#RRGGBB`).
+- Les propriétés valides sont : `color`, `fontSize`, `fontWeight`.
+
 Si rien ne marche, regardez les logs d'erreur dans la console et cherchez sur Google ou demandez de l'aide sur GitHub.
 
 ## Conclusion
@@ -1016,6 +1282,8 @@ Félicitations ! Vous savez maintenant comment utiliser toutes les fonctionnalit
 - Changer le style des titres
 - Valider les données en temps réel
 - Bloquer automatiquement la saisie
+- Utiliser des options globales avec `flowOptions`
+- Personnaliser les couleurs d'erreur
 - Créer des expériences utilisateur uniques
 
 Commencez par des exemples simples, puis ajoutez des fonctionnalités avancées. C'est comme apprendre à cuisiner : commencez par des recettes faciles, puis devenez un chef étoilé !
@@ -1030,11 +1298,14 @@ Bonne création d'apps magiques !
 
 1. **Progression optionnelle** : `showProgressBar`, `showStepNumbers`, `showStepCount`
 2. **Style de titre personnalisé** : `titleStyle` avec `fontSize`, `fontWeight`, `color`
-3. **Validation en temps réel** : Automatic pendant la saisie
-4. **Blocage automatique** : Quand `maxLength` est atteint
-5. **Design compact** : Espaces optimisés automatiquement
+3. **Options globales (flowOptions)** : Configuration unifiée pour toutes les étapes
+4. **Priorité des options** : flowOptions > options étape > valeurs par défaut
+5. **Validation en temps réel** : Automatic pendant la saisie
+6. **Blocage automatique** : Quand `maxLength` est atteint
+7. **Nouvelles couleurs d'erreur** : `warning500` (#cf906eff) pour une meilleure UX
+8. **Design compact** : Espaces optimisés automatiquement
 
-Vous êtes maintenant un expert du StepForm !
+Vous êtes maintenant un expert du StepForm ! 🚀
 
 Si vous n'avez pas ces dépendances, installez-les avec :
 

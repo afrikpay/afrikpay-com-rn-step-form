@@ -357,14 +357,8 @@ export default function App() {
                       };
 
                       return (
-                        <View style={{ padding: 20 }}>
-                          <Text
-                            style={{
-                              fontSize: 18,
-                              fontWeight: 'bold',
-                              marginBottom: 20,
-                            }}
-                          >
+                        <View style={styles.containerChoixForm}>
+                          <Text style={styles.titleFormule}>
                             Choisissez votre formule
                           </Text>
 
@@ -372,39 +366,29 @@ export default function App() {
                             <TouchableOpacity
                               key={formule.id}
                               style={[
-                                {
-                                  backgroundColor:
-                                    selectedFormule === formule.id
-                                      ? '#007AFF'
-                                      : '#f5f5f5',
-                                  padding: 15,
-                                  borderRadius: 8,
-                                  marginBottom: 10,
-                                  borderWidth: 1,
-                                  borderColor:
-                                    selectedFormule === formule.id
-                                      ? '#007AFF'
-                                      : '#ddd',
-                                },
+                                styles.formuleCard,
+                                selectedFormule === formule.id
+                                  ? styles.cardSelected
+                                  : styles.cardDefault,
                               ]}
                               onPress={() => selectFormule(formule.id)}
                             >
                               <Text
                                 style={[
-                                  { fontSize: 16, fontWeight: 'bold' },
+                                  styles.formulaName,
                                   selectedFormule === formule.id
-                                    ? { color: 'white' }
-                                    : { color: '#333' },
+                                    ? styles.textSelected
+                                    : styles.textDefault,
                                 ]}
                               >
                                 {formule.name}
                               </Text>
                               <Text
                                 style={[
-                                  { fontSize: 14, marginTop: 5 },
+                                  styles.formulaPrice,
                                   selectedFormule === formule.id
-                                    ? { color: '#f0f0f0' }
-                                    : { color: '#666' },
+                                    ? styles.priceSelected
+                                    : styles.priceDefault,
                                 ]}
                               >
                                 {formule.price}
@@ -413,10 +397,10 @@ export default function App() {
                                 <Text
                                   key={index}
                                   style={[
-                                    { fontSize: 12, marginTop: 2 },
+                                    styles.featureText,
                                     selectedFormule === formule.id
-                                      ? { color: '#f0f0f0' }
-                                      : { color: '#888' },
+                                      ? styles.featureSelected
+                                      : styles.featureDefault,
                                   ]}
                                 >
                                   {'\u2022 '} {feature}
@@ -426,17 +410,8 @@ export default function App() {
                           ))}
 
                           {selectedFormule && (
-                            <View
-                              style={{
-                                marginTop: 20,
-                                padding: 15,
-                                backgroundColor: '#e8f5e8',
-                                borderRadius: 8,
-                              }}
-                            >
-                              <Text
-                                style={{ color: '#2d7a2d', fontWeight: 'bold' }}
-                              >
+                            <View style={styles.summaryContainer}>
+                              <Text style={styles.summaryText}>
                                 Formule sélectionnée :{' '}
                                 {
                                   formules.find((f) => f.id === selectedFormule)
@@ -849,5 +824,67 @@ const styles = StyleSheet.create({
   scrollViewContent: {
     flexGrow: 1,
     //paddingBottom: 40,
+  },
+  containerChoixForm: {
+    padding: 20,
+  },
+  titleFormule: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  formuleCard: {
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+    borderWidth: 1,
+  },
+  cardSelected: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  cardDefault: {
+    backgroundColor: '#f5f5f5',
+    borderColor: '#ddd',
+  },
+  formulaName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  textSelected: {
+    color: 'white',
+  },
+  textDefault: {
+    color: '#333',
+  },
+  formulaPrice: {
+    fontSize: 14,
+    marginTop: 5,
+  },
+  priceSelected: {
+    color: '#f0f0f0',
+  },
+  priceDefault: {
+    color: '#666',
+  },
+  featureText: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  featureSelected: {
+    color: '#f0f0f0',
+  },
+  featureDefault: {
+    color: '#888',
+  },
+  summaryContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#e8f5e8',
+    borderRadius: 8,
+  },
+  summaryText: {
+    color: '#2d7a2d',
+    fontWeight: 'bold',
   },
 });

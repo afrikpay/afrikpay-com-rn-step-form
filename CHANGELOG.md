@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.2.0](https://github.com/afrikpay/afrikpay-com-rn-step-form/compare/rn-step-form-v3.1.0...rn-step-form-v3.2.0) (2026-04-29)
+
+
+### Features
+
+* **AI-004:** mise à jour des steps ([aac7399](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/aac7399c6bbeee030b8dae61f7dd6499cf028e42))
+* **AI-004:** mise à jour des steps ([dff143e](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/dff143e7cd4f84adefad12d1ae262af7198fdb51))
+
 ## [3.1.0](https://github.com/afrikpay/afrikpay-com-rn-step-form/compare/rn-step-form-v3.0.1...rn-step-form-v3.1.0) (2026-04-22)
 
 ### Features

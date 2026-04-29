@@ -40,18 +40,21 @@ export default function StepFormBuilder({
   backLabel = 'Retour',
   submitLabel = 'Valider',
   testID = 'step-form',
+  flowOptions,
 }: StepFormBuilderProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const isLastStep = currentStep === steps.length - 1;
   const step = steps[currentStep];
 
-  // Options de progression pour l'étape actuelle
+  // Options de progression : flowOptions en priorité, puis options de l'étape, puis valeurs par défaut
   const progressOptions = {
-    showProgressBar: step?.showProgressBar ?? false,
-    showStepNumbers: step?.showStepNumbers ?? false,
-    showStepCount: step?.showStepCount ?? true,
-    titleStyle: step?.titleStyle, // Style personnalisé du titre
+    showProgressBar:
+      flowOptions?.showProgressBar ?? step?.showProgressBar ?? false,
+    showStepNumbers:
+      flowOptions?.showStepNumbers ?? step?.showStepNumbers ?? false,
+    showStepCount: flowOptions?.showStepCount ?? step?.showStepCount ?? true,
+    titleStyle: flowOptions?.titleStyle ?? step?.titleStyle, // Style personnalisé du titre
   };
 
   const {

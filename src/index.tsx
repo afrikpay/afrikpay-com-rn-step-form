@@ -6,4 +6,5 @@ export type {
   FieldType,
   StepFormBuilderProps,
   ValidationRule,
+  FlowOptions,
 } from './types';

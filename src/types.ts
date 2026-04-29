@@ -89,6 +89,28 @@ export type FormStep = {
 
 export type FormData = Record<string, any>;
 
+export type FlowOptions = {
+  showProgressBar?: boolean; // Afficher/cacher la barre de progression pour tout le flow
+  showStepNumbers?: boolean; // Afficher/cacher les numéros d'étapes pour tout le flow
+  showStepCount?: boolean; // Afficher/cacher le compteur pour tout le flow
+  titleStyle?: {
+    fontSize?: number;
+    fontWeight?:
+      | 'normal'
+      | 'bold'
+      | '100'
+      | '200'
+      | '300'
+      | '400'
+      | '500'
+      | '600'
+      | '700'
+      | '800'
+      | '900';
+    color?: string;
+  };
+};
+
 export type StepFormBuilderProps = {
   steps: FormStep[];
   onSubmit: (data: FormData) => void | Promise<void>;
@@ -101,6 +123,7 @@ export type StepFormBuilderProps = {
   backLabel?: string;
   submitLabel?: string;
   testID?: string;
+  flowOptions?: FlowOptions; // Options de progression globales pour tout le flow
 };
 
 export type StepFormFieldProps = {

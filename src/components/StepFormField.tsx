@@ -299,7 +299,7 @@ const f = StyleSheet.create({
     color: colors.neutral700,
   },
   counter: { color: colors.neutral400 },
-  errorText: { marginTop: 4, fontSize: 14, color: colors.error500 },
+  errorText: { marginTop: 4, fontSize: 14, color: colors.warning500 },
   // Text input
   inputRow: { flexDirection: 'row', alignItems: 'center' },
   textInput: {
@@ -317,7 +317,7 @@ const f = StyleSheet.create({
   textInputWithRightIcon: { paddingRight: 40 },
   borderDefault: { borderColor: colors.neutral300 },
   borderFocus: { borderColor: colors.primary700 },
-  borderError: { borderColor: colors.error500 },
+  borderError: { borderColor: colors.warning500 },
   inputDisabled: {
     backgroundColor: colors.neutral100,
     color: colors.neutral400,

@@ -131,7 +131,7 @@ export default function App() {
                 }
                 flowOptions={{
                   showProgressBar: true, // Barre de progression globale pour tout le flow
-                  showStepNumbers: false, // Pas de numéros d'étapes pour tout le flow
+                  showStepNumbers: true, // Pas de numéros d'étapes pour tout le flow
                   showStepCount: true, // Afficher le compteur (1/5, 2/5...) pour tout le flow
                   titleStyle: {
                     fontSize: 22,

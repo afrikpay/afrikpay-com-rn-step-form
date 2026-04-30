@@ -1,6 +1,6 @@
 {
   "name": "@afrikpay/rn-step-form",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "Declarative multi-step form builder for React Native — NativeWind, RHF, Zod",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",

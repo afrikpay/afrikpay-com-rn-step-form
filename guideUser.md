@@ -727,8 +727,10 @@ Vous pouvez maintenant définir des options de progression globales qui s'appliq
 
 ```javascript
 const progressOptions = {
-  showProgressBar: flowOptions?.showProgressBar ?? step?.showProgressBar ?? false,
-  showStepNumbers: flowOptions?.showStepNumbers ?? step?.showStepNumbers ?? false,
+  showProgressBar:
+    flowOptions?.showProgressBar ?? step?.showProgressBar ?? false,
+  showStepNumbers:
+    flowOptions?.showStepNumbers ?? step?.showStepNumbers ?? false,
   showStepCount: flowOptions?.showStepCount ?? step?.showStepCount ?? true,
   titleStyle: flowOptions?.titleStyle ?? step?.titleStyle,
 };
@@ -741,10 +743,11 @@ const progressOptions = {
   steps={steps}
   onSubmit={handleSubmit}
   flowOptions={{
-    showProgressBar: true,        // Barre visible pour toutes les étapes
-    showStepNumbers: true,         // Numéros visibles pour toutes les étapes
-    showStepCount: true,           // Compteur visible pour toutes les étapes
-    titleStyle: {                  // Style par défaut pour tous les titres
+    showProgressBar: true, // Barre visible pour toutes les étapes
+    showStepNumbers: true, // Numéros visibles pour toutes les étapes
+    showStepCount: true, // Compteur visible pour toutes les étapes
+    titleStyle: {
+      // Style par défaut pour tous les titres
       color: '#1D4ED8',
       fontWeight: '600',
       fontSize: 20,
@@ -756,11 +759,13 @@ const progressOptions = {
 #### Priorité des Options
 
 L'ordre de priorité est le suivant :
+
 1. **flowOptions** (le plus prioritaire)
 2. **Options de l'étape individuelle** (step.showProgressBar, etc.)
 3. **Valeurs par défaut** (le moins prioritaire)
 
 Cela signifie que :
+
 - Si vous définissez `flowOptions.showProgressBar = true`, toutes les étapes auront une barre de progression
 - Si une étape spécifique a `showProgressBar: false`, elle écrasera la valeur globale
 - Si rien n'est défini, les valeurs par défaut s'appliquent
@@ -772,7 +777,7 @@ const steps = [
   {
     title: 'Étape 1',
     // Cette étape écrase les options globales pour la barre
-    showProgressBar: false, 
+    showProgressBar: false,
     fields: [...],
   },
   {
@@ -821,8 +826,8 @@ Vous pouvez modifier les couleurs dans le fichier `tokens.ts` :
 ```javascript
 export const colors = {
   // ... autres couleurs
-  warning500: '#cf906eff',  // Couleur actuelle des erreurs
-  error500: '#EF4444',      // Rouge classique si vous préférez
+  warning500: '#cf906eff', // Couleur actuelle des erreurs
+  error500: '#EF4444', // Rouge classique si vous préférez
   // ... autres couleurs
 };
 ```
@@ -835,6 +840,7 @@ export const colors = {
 - **Professionnelle** : Convient mieux aux applications d'entreprise
 
 Les champs de saisie invalides auront automatiquement cette nouvelle couleur orange pour :
+
 - La bordure du champ
 - Le texte d'erreur
 - Les indicateurs visuels d'erreur
@@ -1075,12 +1081,12 @@ Voici un exemple plus réalique pour une application d'entreprise :
 ```javascript
 const steps = [
   {
-    title: 'Informations de l\'Entreprise',
+    title: "Informations de l'Entreprise",
     // Utilise le style global défini dans flowOptions
     fields: [
       {
         name: 'nom_entreprise',
-        label: 'Nom de l\'entreprise',
+        label: "Nom de l'entreprise",
         type: 'text',
         validation: { required: 'Nom requis' },
       },
@@ -1155,11 +1161,11 @@ export default function EntrepriseForm() {
       onSubmit={handleSubmit}
       flowOptions={{
         // Configuration globale
-        showProgressBar: true,        // Visible pour les étapes 1 et 3
-        showStepNumbers: true,         // Visible pour toutes les étapes
-        showStepCount: true,           // Visible pour toutes les étapes
+        showProgressBar: true, // Visible pour les étapes 1 et 3
+        showStepNumbers: true, // Visible pour toutes les étapes
+        showStepCount: true, // Visible pour toutes les étapes
         titleStyle: {
-          color: '#1D4ED8',            // Bleu par défaut
+          color: '#1D4ED8', // Bleu par défaut
           fontWeight: '600',
           fontSize: 20,
         },

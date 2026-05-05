@@ -129,19 +129,17 @@ export default function App() {
                 onSubmit={(formData) =>
                   console.log(JSON.stringify(formData, null, 2))
                 }
-                flowOptions={{
-                  showProgressBar: true, // Barre de progression globale pour tout le flow
-                  showStepNumbers: true, // Pas de numéros d'étapes pour tout le flow
-                  showStepCount: true, // Afficher le compteur (1/5, 2/5...) pour tout le flow
-                  titleStyle: {
-                    fontSize: 22,
-                    fontWeight: '400',
-                    color: '#1f2937',
-                  },
-                }}
                 steps={[
                   {
                     title: 'Informations Personnelles',
+                    showProgressBar: true,
+                    showStepNumbers: false,
+                    showStepCount: true,
+                    titleStyle: {
+                      fontSize: 22,
+                      fontWeight: '400',
+                      color: '#693205ff',
+                    },
 
                     fields: [
                       {
@@ -179,6 +177,14 @@ export default function App() {
 
                   {
                     title: 'Information Legales',
+                    showProgressBar: true,
+                    showStepNumbers: false, // Pas de numéros d'étapes pour tout le flow
+                    showStepCount: true,
+                    titleStyle: {
+                      color: 'blue',
+                      fontWeight: '400' as const,
+                      fontSize: 22,
+                    },
                     fields: [
                       {
                         name: 'is_married',
@@ -225,6 +231,9 @@ export default function App() {
 
                   {
                     title: 'Informations Personnelles',
+                    showProgressBar: true,
+                    showStepNumbers: false, // Pas de numéros d'étapes pour tout le flow
+                    showStepCount: true,
                     fields: [
                       {
                         name: 'name',

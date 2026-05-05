@@ -133,7 +133,7 @@ export default function App() {
                   {
                     title: 'Informations Personnelles',
                     showProgressBar: true,
-                    showStepNumbers: false, // Pas de numéros d'étapes pour tout le flow
+                    showStepNumbers: false,
                     showStepCount: true,
                     titleStyle: {
                       fontSize: 22,

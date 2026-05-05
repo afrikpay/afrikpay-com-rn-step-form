@@ -2,19 +2,17 @@
 
 ## [3.3.0](https://github.com/afrikpay/afrikpay-com-rn-step-form/compare/rn-step-form-v3.2.0...rn-step-form-v3.3.0) (2026-04-30)
 
-
 ### Features
 
-* **AI-005:** fix stepform validation ([ee00626](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/ee0062675df1ddf4d7edf44d4ca27f4a8fa3b5f4))
-* **AI-005:** fix stepform validation ([ffc684d](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/ffc684dd48a5ce7239302bd0dfc62ae70d841b63))
+- **AI-005:** fix stepform validation ([ee00626](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/ee0062675df1ddf4d7edf44d4ca27f4a8fa3b5f4))
+- **AI-005:** fix stepform validation ([ffc684d](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/ffc684dd48a5ce7239302bd0dfc62ae70d841b63))
 
 ## [3.2.0](https://github.com/afrikpay/afrikpay-com-rn-step-form/compare/rn-step-form-v3.1.0...rn-step-form-v3.2.0) (2026-04-29)
 
-
 ### Features
 
-* **AI-004:** mise à jour des steps ([aac7399](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/aac7399c6bbeee030b8dae61f7dd6499cf028e42))
-* **AI-004:** mise à jour des steps ([dff143e](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/dff143e7cd4f84adefad12d1ae262af7198fdb51))
+- **AI-004:** mise à jour des steps ([aac7399](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/aac7399c6bbeee030b8dae61f7dd6499cf028e42))
+- **AI-004:** mise à jour des steps ([dff143e](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/dff143e7cd4f84adefad12d1ae262af7198fdb51))
 
 ## [3.1.0](https://github.com/afrikpay/afrikpay-com-rn-step-form/compare/rn-step-form-v3.0.1...rn-step-form-v3.1.0) (2026-04-22)
 

@@ -109,4 +109,5 @@ export type StepFormFieldProps = {
   error?: FieldError | Merge<FieldError, FieldErrorsImpl<FormData>>;
   defaultValue?: any;
   formValues?: FormData;
+  onFieldBlur?: (fieldName: string) => void; // Callback pour marquer un champ comme "touched"
 };

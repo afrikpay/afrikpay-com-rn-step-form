@@ -21,6 +21,7 @@ export function StepFormField({
   error,
   defaultValue,
   formValues,
+  onFieldBlur, // Callback pour marquer le champ comme "touched"
 }: StepFormFieldProps) {
   const [secureTextVisible, setSecureTextVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -234,6 +235,8 @@ export function StepFormField({
                   }}
                   onBlur={() => {
                     setIsFocused(false);
+                    // Marquer le champ comme "touched" lors du blur
+                    onFieldBlur?.(name);
                     onBlur();
                   }}
                   onFocus={() => setIsFocused(true)}

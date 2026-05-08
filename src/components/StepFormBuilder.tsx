@@ -43,6 +43,7 @@ export default function StepFormBuilder({
 }: StepFormBuilderProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set()); // Pour suivre les champs touchés par l'utilisateur
   const isLastStep = currentStep === steps.length - 1;
   const step = steps[currentStep];
 
@@ -100,6 +101,11 @@ export default function StepFormBuilder({
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   }, []);
 
+  const handleFieldBlur = useCallback((fieldName: string) => {
+    // permet de marquer un champ comme "touched" quand l'utilisateur quitte le champ
+    setTouchedFields((prev) => new Set(prev).add(fieldName));
+  }, []);
+
   const handleNext = async () => {
     const fieldNames = visibleFields.map((f) => f.name);
     const isValid = await trigger(fieldNames);
@@ -143,9 +149,10 @@ export default function StepFormBuilder({
         key={field.name}
         field={field}
         control={control}
-        error={errors[field.name]}
+        error={touchedFields.has(field.name) ? errors[field.name] : undefined} // Affiche l'erreur seulement si le champ a été touché
         defaultValue={defaultValues?.[field.name]}
         formValues={formValues}
+        onFieldBlur={handleFieldBlur}
       />
     ));
   };

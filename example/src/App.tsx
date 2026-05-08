@@ -442,6 +442,9 @@ export default function App() {
                         name: 'email', // Changé 'name' par 'email' pour la cohérence roberto12#
                         label: 'Email',
                         type: 'email',
+                        helperText:
+                          'Cet email sera utilisé pour vous contacter',
+                        placeholder: 'Entrez votre email',
                         validation: {
                           required: 'Email requis',
                           pattern: {
@@ -495,8 +498,6 @@ export default function App() {
                     },
                   },
 
-                  // ─────────────────────────
-                  // ETAPE 4 (CHOIX PAIEMENT)
                   // ETAPE 4 (CHOIX PAIEMENT)
                   {
                     title: 'Moyen de paiement',
@@ -564,6 +565,7 @@ export default function App() {
                             name: 'phoneNumber',
                             label: 'Téléphone',
                             type: 'phone',
+                            helperText: 'Ce numéro doit contenir 9 chiffres',
                             validation: {
                               required: {
                                 value: true,

@@ -33,6 +33,7 @@ export type FormField = {
   label: string;
   type: FieldType;
   placeholder?: string;
+  helperText?: string; // Texte d'aide affiché sous le champ pour donner des instructions supplémentaires
   defaultValue?: string | number | boolean | Date;
   maxLength?: number;
   validation?: ValidationRule;

@@ -31,6 +31,7 @@ export function StepFormField({
     label,
     type,
     placeholder,
+    helperText,
     validation,
     disabled,
     maxLength,
@@ -282,6 +283,7 @@ export function StepFormField({
                   </View>
                 )}
               </View>
+              {helperText && <Text style={f.helperText}>{helperText}</Text>}
               {error && (
                 <Text style={f.errorText}>{error.message?.toString()}</Text>
               )}
@@ -302,6 +304,7 @@ const f = StyleSheet.create({
     color: colors.neutral700,
   },
   counter: { color: colors.neutral400 },
+  helperText: { marginTop: 4, fontSize: 12, color: colors.neutral500 },
   errorText: { marginTop: 4, fontSize: 14, color: colors.warning500 },
   // Text input
   inputRow: { flexDirection: 'row', alignItems: 'center' },

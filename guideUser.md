@@ -10,6 +10,7 @@ La librairie `@afrikpay/rn-step-form` est un outil super puissant pour créer de
 
 - Affichage optionnel de la progression (barre, numéros, compteur)
 - Style personnalisé pour les titres
+- Validation intelligente au blur (erreurs affichées uniquement après avoir quitté un champ)
 - Validation en temps réel pendant la saisie
 - Blocage automatique quand la limite de caractères est atteinte
 - Design compact et moderne
@@ -184,9 +185,61 @@ Voici comment faire :
 
 Vous verrez un formulaire avec deux étapes. Remplissez les champs et cliquez sur "Suivant" pour passer à l'étape suivante, puis "Valider" pour soumettre.
 
-## Étape 4 : Les Nouvelles Fonctionnalités Magiques
+## Étape 4 : Validation Intelligente au Blur 🎯
 
-### 4.1 Contrôler l'Affichage de la Progression
+### Qu'est-ce que la validation au blur ?
+
+Imaginez que vous êtes en train de remplir un formulaire. Avant, dès que vous faisiez une erreur, un message rouge apparaissait immédiatement. C'était stressant !
+
+Maintenant, c'est différent :
+
+- **Pendant la saisie** : Vous pouvez taper tranquillement, même si ce que vous écrivez est temporairement incorrect. Aucun message d'erreur ne vous dérange.
+- **Quand vous quittez le champ** : Seulement à ce moment-là, si une erreur existe, elle s'affiche. C'est comme avoir un professeur patient qui attend que vous finissiez votre phrase avant de vous corriger.
+
+### Pourquoi c'est mieux ?
+
+1. **Moins de stress** : L'utilisateur n'est pas interrompu pendant sa réflexion
+2. **Feedback au bon moment** : L'erreur apparaît quand l'utilisateur passe au champ suivant
+3. **Expérience plus naturelle** : Comme une conversation réelle où on attend la fin d'une phrase avant de réagir
+
+### Comment ça fonctionne techniquement ?
+
+La librairie utilise un état "touched" (visité) pour chaque champ :
+
+- Quand un champ reçoit le focus : L'utilisateur peut saisir sans être dérangé
+- Quand l'utilisateur quitte le champ (onBlur) : Le champ est marqué comme "touched" et les erreurs peuvent s'afficher
+- Pendant la saisie (onChange) : La validation se fait en arrière-plan mais reste invisible
+
+### Exemple concret
+
+```javascript
+// Ce champ va valider l'email mais ne montrera l'erreur
+// que quand l'utilisateur quittera le champ
+{
+  name: 'email',
+  label: 'Votre email',
+  type: 'email',
+  validation: {
+    required: "L'email est obligatoire",
+    pattern: {
+      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+      message: 'Format email invalide',
+    },
+  },
+}
+```
+
+**Comportement :**
+
+1. L'utilisateur tape "test@" → Pas d'erreur affichée
+2. L'utilisateur clique sur le champ suivant → L'erreur "Format email invalide" apparaît
+3. L'utilisateur revient et corrige en "test@email.com" → L'erreur disparaît immédiatement
+
+Cette fonctionnalité est automatique, vous n'avez rien à configurer !
+
+## Étape 5 : Les Autres Fonctionnalités Magiques
+
+### 5.1 Contrôler l'Affichage de la Progression
 
 C'est comme avoir un interrupteur pour chaque élément de progression ! Vous pouvez décider quoi montrer ou cacher pour chaque étape.
 
@@ -1708,7 +1761,241 @@ Pour faire quelque chose après une étape, comme vérifier des données :
 }
 ```
 
-## Étape 8 : Personnaliser le Style
+## Étape 8 : Types de Champs Disponibles 🎨
+
+La librairie offre plusieurs types de champs pour tous vos besoins :
+
+### Champs Texte Standards
+
+#### Texte simple
+
+```javascript
+{
+  name: 'nom',
+  label: 'Nom complet',
+  type: 'text',
+  placeholder: 'Entrez votre nom',
+  helperText: 'Utilisez votre nom légal tel qu\'il apparaît sur votre pièce d\'identité',
+  maxLength: 50,
+  leftIcon: User, // Icône de lucide-react-native
+}
+```
+
+#### Email
+
+```javascript
+{
+  name: 'email',
+  label: 'Email',
+  type: 'email',
+  placeholder: 'votre@email.com',
+  helperText: 'Nous utiliserons cet email pour vous contacter et envoyer votre confirmation',
+  validation: {
+    required: 'Email requis',
+    pattern: {
+      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+      message: 'Email invalide'
+    }
+  }
+}
+```
+
+#### Téléphone
+
+```javascript
+{
+  name: 'telephone',
+  label: 'Téléphone',
+  type: 'phone',
+  placeholder: '+226 XX XX XX XX',
+  validation: {
+    required: 'Téléphone requis',
+    minLength: { value: 8, message: '8 chiffres minimum' }
+  }
+}
+```
+
+#### Nombre
+
+```javascript
+{
+  name: 'age',
+  label: 'Âge',
+  type: 'number',
+  placeholder: '25',
+  validation: {
+    required: 'Âge requis',
+    min: { value: 18, message: 'Doit avoir 18 ans ou plus' },
+    max: { value: 120, message: 'Âge invalide' }
+  }
+}
+```
+
+#### Zone de texte multiligne
+
+```javascript
+{
+  name: 'description',
+  label: 'Description',
+  type: 'multiline',
+  placeholder: 'Décrivez votre projet...',
+  maxLength: 500,
+}
+```
+
+### Champs de Sélection
+
+#### Menu déroulant (Select)
+
+```javascript
+{
+  name: 'pays',
+  label: 'Pays',
+  type: 'select',
+  options: [
+    { label: 'Burkina Faso', value: 'bf' },
+    { label: 'Côte d\'Ivoire', value: 'ci' },
+    { label: 'Sénégal', value: 'sn' },
+  ],
+  placeholder: 'Sélectionnez un pays',
+  validation: { required: 'Pays requis' }
+}
+```
+
+#### Boutons radio
+
+```javascript
+{
+  name: 'sexe',
+  label: 'Sexe',
+  type: 'radio',
+  options: [
+    { label: 'Homme', value: 'homme' },
+    { label: 'Femme', value: 'femme' },
+    { label: 'Autre', value: 'autre' },
+  ],
+  validation: { required: 'Sélectionnez une option' }
+}
+```
+
+#### Interrupteur (Switch)
+
+```javascript
+{
+  name: 'notifications',
+  label: 'Recevoir les notifications',
+  type: 'switch',
+  defaultValue: true,
+}
+```
+
+#### Case à cocher (Checkbox)
+
+```javascript
+{
+  name: 'conditions',
+  label: 'J\'accepte les conditions générales',
+  type: 'checkbox',
+  validation: { required: 'Vous devez accepter les conditions' }
+}
+```
+
+### Champs Spéciaux
+
+#### Date
+
+```javascript
+{
+  name: 'date_naissance',
+  label: 'Date de naissance',
+  type: 'date',
+  validation: { required: 'Date requise' }
+}
+```
+
+#### Fichier
+
+```javascript
+{
+  name: 'photo',
+  label: 'Photo de profil',
+  type: 'file',
+  acceptedTypes: ['image/*'], // Types de fichiers acceptés
+  placeholder: 'Choisir une photo',
+}
+```
+
+### Fonctionnalités Avancées
+
+#### Champs conditionnels
+
+```javascript
+{
+  name: 'nom_conjoint',
+  label: 'Nom du conjoint',
+  type: 'text',
+  showWhen: {
+    field: 'marie',
+    value: 'oui'
+  }, // Apparaît seulement si marié = oui
+}
+```
+
+#### Champs éditables dynamiquement
+
+```javascript
+{
+  name: 'commentaire',
+  label: 'Commentaire',
+  type: 'multiline',
+  editable: (formValues) => formValues.statut === 'admin', // Editable seulement pour les admins
+}
+```
+
+#### Champs avec icônes
+
+```javascript
+import { User, Mail, Phone, Calendar } from 'lucide-react-native';
+
+{
+  name: 'email',
+  label: 'Email',
+  type: 'email',
+  leftIcon: Mail, // Icône à gauche
+  rightIcon: User, // Icône à droite
+}
+```
+
+#### Texte d'aide (HelperText)
+
+Le `helperText` est parfait pour donner des instructions supplémentaires à l'utilisateur sans encombrer l'interface :
+
+```javascript
+{
+  name: 'mot_de_passe',
+  label: 'Mot de passe',
+  type: 'password',
+  helperText: 'Minimum 8 caractères, incluant au moins une majuscule et un chiffre',
+  validation: {
+    required: 'Mot de passe requis',
+    minLength: { value: 8, message: '8 caractères minimum' }
+  }
+}
+```
+
+**Quand utiliser le helperText :**
+
+- **Instructions de format** : "Format: JJ/MM/AAAA"
+- **Exemples** : "Ex: Jean Dupont"
+- **Consignes de sécurité** : "Ne partagez jamais ce mot de passe"
+- **Informations complémentaires** : "Cet email sera utilisé pour la facturation"
+
+**Différence avec placeholder :**
+
+- `placeholder` : Disparaît quand l'utilisateur commence à taper
+- `helperText` : Reste toujours visible pour guider l'utilisateur
+
+## Étape 9 : Personnaliser le Style
 
 La librairie utilise NativeWind pour le style. Vous pouvez personnaliser les couleurs, tailles, etc., en modifiant les classes CSS.
 
@@ -1743,6 +2030,32 @@ Par exemple, pour changer les couleurs, modifiez le fichier `tokens.ts` ou ajout
 - Assurez-vous que les noms de champs sont uniques.
 
 Si rien ne marche, regardez les logs d'erreur dans la console et cherchez sur Google ou demandez de l'aide sur GitHub.
+
+## Étape 10 : Bonnes Pratiques et Optimisations 💡
+
+### Performance
+
+- Utilisez `defaultValues` pour pré-remplir les formulaires
+- Évitez les validations trop complexes dans `onChange`
+- Utilisez `resolver` avec Zod pour des validations complexes
+
+### Accessibilité
+
+- Ajoutez des `testID` pour les tests automatiques
+- Utilisez des labels clairs et des placeholders utiles
+- Pensez au contraste des couleurs
+
+### UX Optimale
+
+- Profitez de la validation au blur pour réduire le stress
+- Utilisez les champs conditionnels pour simplifier l'interface
+- Ajoutez des étapes de confirmation pour les formulaires complexes
+
+### Sécurité
+
+- Validez toujours les données côté serveur
+- Utilisez des patterns regex robustes
+- Limitez la taille des fichiers uploadés
 
 ## Conclusion
 

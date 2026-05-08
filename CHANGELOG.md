@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.4.0](https://github.com/afrikpay/afrikpay-com-rn-step-form/compare/rn-step-form-v3.3.0...rn-step-form-v3.4.0) (2026-05-08)
+
+
+### Features
+
+* **AI-743:** ajout du helpertext dans les steps ([46ffb7c](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/46ffb7c0d93f549281af0d926546704e4da2c7bb))
+* **AI-743:** ajout du helpertext dans les steps ([aa6b36b](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/aa6b36bbc420d106b2d418e4d571ae818675be0f))
+* **AI-743:** ajout onblur pour gerer les erreurs ([383398f](https://github.com/afrikpay/afrikpay-com-rn-step-form/commit/383398f0e74a8f457e40fe1967e8171832e7d879))
+
 ## [3.3.0](https://github.com/afrikpay/afrikpay-com-rn-step-form/compare/rn-step-form-v3.2.0...rn-step-form-v3.3.0) (2026-04-30)
 
 ### Features

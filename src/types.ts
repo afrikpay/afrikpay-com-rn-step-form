@@ -33,6 +33,7 @@ export type FormField = {
   label: string;
   type: FieldType;
   placeholder?: string;
+  helperText?: string; // Texte d'aide affiché sous le champ pour donner des instructions supplémentaires
   defaultValue?: string | number | boolean | Date;
   maxLength?: number;
   validation?: ValidationRule;
@@ -109,4 +110,5 @@ export type StepFormFieldProps = {
   error?: FieldError | Merge<FieldError, FieldErrorsImpl<FormData>>;
   defaultValue?: any;
   formValues?: FormData;
+  onFieldBlur?: (fieldName: string) => void; // Callback pour marquer un champ comme "touched"
 };

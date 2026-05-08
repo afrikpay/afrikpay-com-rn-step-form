@@ -565,16 +565,19 @@ export default function App() {
                             name: 'phoneNumber',
                             label: 'Téléphone',
                             type: 'phone',
-                            helperText: 'Ce numéro doit contenir 9 chiffres',
+                            helperText: 'entrez votre numéro de téléphone',
                             validation: {
                               required: {
                                 value: true,
                                 message: 'Téléphone requis',
                               },
-                              minLength: { value: 9, message: '9 chiffres' },
+                              minLength: {
+                                value: 9,
+                                message: 'ce numéro doit contenir 9 chiffres',
+                              },
                               maxLength: {
                                 value: 9,
-                                message: '9 chiffres maximum',
+                                message: 'ce numéro doit contenir 9 chiffres',
                               },
                             },
                             //leftIcon: Home,

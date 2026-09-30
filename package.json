@@ -1,6 +1,6 @@
 {
   "name": "@afrikpay/rn-step-form",
-  "version": "3.4.0",
+  "version": "2.0.8",
   "description": "Declarative multi-step form builder for React Native — NativeWind, RHF, Zod",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",
@@ -68,7 +68,7 @@
     "@evilmartians/lefthook": "^1.5.0",
     "@expo/vector-icons": "^13.0.0",
     "@gorhom/bottom-sheet": ">=5",
-    "@react-native-community/datetimepicker": "6.7.3",
+    "@react-native-community/datetimepicker": "^9.2.1",
     "@react-native/eslint-config": "^0.78.0",
     "@react-native/eslint-plugin": "^0.84.1",
     "@types/jest": "^29.5.5",
@@ -100,7 +100,7 @@
   },
   "peerDependencies": {
     "@gorhom/bottom-sheet": ">=5",
-    "@react-native-community/datetimepicker": ">=7",
+    "@react-native-community/datetimepicker": "*",
     "expo-document-picker": ">=14",
     "lucide-react-native": ">=0.300",
     "nativewind": ">=4",

@@ -245,6 +245,11 @@ export default function App() {
                         label: 'Age',
                         type: 'number',
                       },
+                      {
+                        name: 'nom',
+                        label: 'Nom',
+                        type: 'text',
+                      },
                     ],
                     onStepComplete(stepData) {
                       console.log('data', stepData);

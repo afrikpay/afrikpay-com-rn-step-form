@@ -64,7 +64,7 @@ export function DateFieldNW({
             value={dateValue ?? new Date()}
             mode="date"
             display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={handleChange}
+            onValueChange={handleChange}
             maximumDate={new Date()}
             locale="fr-FR"
           />

@@ -25,7 +25,7 @@ __metadata:
     "@expo/metro-runtime": ~6.1.2
     "@expo/vector-icons": ^15.0.3
     "@gorhom/bottom-sheet": ^5.2.8
-    "@react-native-community/datetimepicker": 8.4.4
+    "@react-native-community/datetimepicker": ^9.2.1
     expo: ~54.0.0
     expo-document-picker: ~14.0.8
     expo-status-bar: ~3.0.9
@@ -55,7 +55,7 @@ __metadata:
     "@evilmartians/lefthook": ^1.5.0
     "@expo/vector-icons": ^13.0.0
     "@gorhom/bottom-sheet": ">=5"
-    "@react-native-community/datetimepicker": 6.7.3
+    "@react-native-community/datetimepicker": ^9.2.1
     "@react-native/eslint-config": ^0.78.0
     "@react-native/eslint-plugin": ^0.84.1
     "@types/jest": ^29.5.5
@@ -86,7 +86,7 @@ __metadata:
     typescript: 5.2.2
   peerDependencies:
     "@gorhom/bottom-sheet": ">=5"
-    "@react-native-community/datetimepicker": ">=7"
+    "@react-native-community/datetimepicker": "*"
     expo-document-picker: ">=14"
     lucide-react-native: ">=0.300"
     nativewind: ">=4"
@@ -3228,18 +3228,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/datetimepicker@npm:6.7.3":
-  version: 6.7.3
-  resolution: "@react-native-community/datetimepicker@npm:6.7.3"
-  dependencies:
-    invariant: ^2.2.4
-  checksum: ad08d786aafe8c33135c5f2bdc227d54970bf41ee9f9876a7d4ed365733f02c6e4fb2b8df8f0c45702e5aee43843fe78b7c04c1ff7a1862cde48789e68b9d355
-  languageName: node
-  linkType: hard
-
-"@react-native-community/datetimepicker@npm:8.4.4":
-  version: 8.4.4
-  resolution: "@react-native-community/datetimepicker@npm:8.4.4"
+"@react-native-community/datetimepicker@npm:^9.2.1":
+  version: 9.2.1
+  resolution: "@react-native-community/datetimepicker@npm:9.2.1"
   dependencies:
     invariant: ^2.2.4
   peerDependencies:
@@ -3252,7 +3243,7 @@ __metadata:
       optional: true
     react-native-windows:
       optional: true
-  checksum: 659a19ec6ea6ec7538519411c60ff8eeae330b40248e28a38b540e5d8f758859f6a0fa8e9e39efbafbc6d44b57e3f68cb972b5fd4abb9a173651ca09a1ff28e5
+  checksum: 5001e0db2e5c9b234050f08c25556c668a1fbeff60107f26af0e947baf1995b7ac50f9f05803d8f57c3b856665f59a443df6039536ace928f5009a540cedcc6e
   languageName: node
   linkType: hard
 
